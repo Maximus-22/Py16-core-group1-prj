@@ -129,8 +129,8 @@ while playing:
    main_display.blit(FONT.render(str(score), True, COLOR_BLACK), (WIDTH-50, 20))
    main_display.blit(player, player_rect)
 
-   print(len(enemies))
-   print(len(bonuses))
+   # print(len(enemies))
+   # print(len(bonuses))
 
    pygame.display.flip() 
 
