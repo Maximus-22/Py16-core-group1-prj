@@ -41,9 +41,6 @@ class NoteManager:
                 self.save_notes()
                 break
 
-    def show_all_notes(self):
-        return self.notes
-
     def search_notes(self, query):
         results = []
         for note in self.notes:
@@ -58,6 +55,13 @@ class NoteManager:
     def sort_notes_by_tags(self, tag):
         sorted_notes = [note for note in self.notes if tag.lower() in [t.lower() for t in note["tags"]]]
         return sorted_notes
+    
+    def show_all_notes(self):
+        return self.notes
+
+    def clear_all_notes(self):
+        self.notes = []
+        self.save_notes()
 
 if __name__ == "__main__":
     manager = NoteManager("notes.json")

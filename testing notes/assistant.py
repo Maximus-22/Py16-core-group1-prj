@@ -176,29 +176,27 @@ def notes_menu():
         print("4. Пошук нотаток")
         print("5. Сортувати нотатки за тегами")
         print("6. Показати всі нотатки")
-        print("7. Назад")
+        print("7. Видалити всі нотатки")
+        print("8. Назад")
 
-        choice = input("Оберіть опцію (1/2/3/4/5/6/7): ")
+        choice = input("Оберіть опцію (1/2/3/4/5/6/7/8): ")
 
         if choice == "1":
-            # print(f'Ваш вибір: {choice}')
             add_note(note_manager)
         elif choice == "2":
-            # print(f'Ваш вибір: {choice}')
             edit_note(note_manager)
         elif choice == "3":
-            # print(f'Ваш вибір: {choice}')
             delete_note(note_manager)
         elif choice == "4":
-            # print(f'Ваш вибір: {choice}')
             search_notes(note_manager)
         elif choice == "5":
-            # print(f'Ваш вибір: {choice}')
             sort_notes_by_tags(note_manager)
         elif choice == "6":
-            # print(f'Ваш вибір: {choice}')
             show_all_notes(note_manager)
         elif choice == "7":
+            note_manager.clear_all_notes()
+            input("Усі нотатки були видалені. Натисніть Enter для продовження.")
+        elif choice == "8":
             return
         else:
             input("Некоректний вибір. Натисніть Enter для продовження.")
