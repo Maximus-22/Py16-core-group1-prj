@@ -190,7 +190,9 @@ def notes_menu():
         elif choice == "4":
             search_notes(note_manager)
         elif choice == "5":
-            sort_notes_by_tags(note_manager)
+            tags_input = input("Введіть теги (через кому) для сортування: ")
+            tags = [tag.strip() for tag in tags_input.split(',')]
+            sort_notes_by_tags(note_manager, tags)
         elif choice == "6":
             show_all_notes(note_manager)
         elif choice == "7":
@@ -288,30 +290,41 @@ def search_notes(note_manager):
     else:
         input("За вашим запитом не знайдено жодної нотатки. Натисніть Enter для продовження.")
 
-def sort_notes_by_tags(note_manager):
+def sort_notes_by_tags(note_manager, tags):
     clear_screen()
     print("Сортування нотаток за тегами")
-    tags_input = input("Введіть теги (через кому) для сортування: ")
-    tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
 
     if not tags:
-        input("Ви нічого не ввели, будь ласка спробуйте ще. Натисніть Enter для продовження.")
+        input("Ви не ввели жодного тегу. Натисніть Enter для продовження.")
         return
     
     sorted_notes = []
+    exact_match_notes = []
 
     for tag in tags:
         notes = note_manager.search_notes(tag)
-        sorted_notes.extend(notes)
+        if notes:
+            exact_match_notes.extend(notes)
 
+    all_notes = note_manager.show_all_notes()
+    for note in all_notes:
+        if note not in exact_match_notes:
+            sorted_notes.append(note)
+
+    if exact_match_notes:
+        print(f"Нотатки з точним збігом по тегам '{', '.join(tags)}':")
+        for i, note in enumerate(exact_match_notes, start=1):
+            print(f"{i}. Заголовок: {note['title']}")
+            print(f"   Тіло: {note['body']}")
+            print(f"   Теги: {', '.join(note['tags'])}")
+
+    sorted_notes.sort(key=lambda x: ', '.join(x['tags']))
     if sorted_notes:
-        print(f"Відсортовані нотатки за тегами '{', '.join(tags)}':")
+        print("Інші нотатки відсортовані за алфавітом по тегу:")
         for i, note in enumerate(sorted_notes, start=1):
-            print(f"{i}. {note['title']} - {note['body']} ({', '.join(note['tags'])})")
+            print(f"{i}. {note['title']} - {note['body']} - ({', '.join(sorted(note['tags']))})")
 
-        input("Натисніть Enter для продовження.")
-    else:
-        input(f"Нотатки з тегами '{', '.join(tags)}' не знайдені. Натисніть Enter для продовження.")
+    input("Натисніть Enter для продовження.")
 
 
 def show_all_notes(note_manager):
