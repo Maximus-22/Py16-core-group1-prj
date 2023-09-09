@@ -35,7 +35,8 @@ class Email(Field):
         return self.value
 
 class Name(Field):
-    pass
+    def __str__(self):
+        return self.value
 
 class Address(Field):
     def __str__(self):
@@ -90,6 +91,20 @@ class Record:
         days_left = (next_birthday - today).days
         return days_left
 
+    def __str__(self):
+        result = f"Name: {self.name}\n"
+        result += f"Address: {self.address}\n"
+        result += "Phones:\n"
+        for phone in self.phones:
+            result += f"  {phone}\n"
+        result += "Emails:\n"
+        for email in self.emails:
+            result += f"  {email}\n"
+        if self.birthday:
+            result += f"Birthday: {self.birthday}\n"
+        result += "-" * 30
+        return result
+
 class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[record.name] = record
@@ -122,6 +137,20 @@ class AddressBook(UserDict):
         except FileNotFoundError:
             return cls()
 
+    def search_records(self, query):
+        query = query.lower()
+        found_records = []
+        for record in self.data.values():
+            if query in record.name.lower():
+                found_records.append(record)
+            for phone in record.phones:
+                if query in phone.lower():
+                    found_records.append(record)
+            for email in record.emails:
+                if query in email.lower():
+                    found_records.append(record)
+        return found_records
+
 if __name__ == "__main__":
     book = AddressBook()
 
@@ -133,9 +162,10 @@ if __name__ == "__main__":
         print("4. List All Contacts")
         print("5. Save Address Book")
         print("6. Load Address Book")
-        print("7. Exit")
+        print("7. Search Contacts")
+        print("8. Exit")
 
-        choice = input("Enter your choice (1/2/3/4/5/6/7): ")
+        choice = input("Enter your choice (1/2/3/4/5/6/7/8): ")
 
         if choice == "1":
             while True:
@@ -236,31 +266,33 @@ if __name__ == "__main__":
         elif choice == "4":
             print("List of All Contacts:")
             for record in book.data.values():
-                print(f"Name: {record.name}")
-                print(f"Address: {record.address}")
-                print("Phones:")
-                for phone in record.phones:
-                    print(f"  {phone}")
-                print("Emails:")
-                for email in record.emails:
-                    print(f"  {email}")
-                if record.birthday:
-                    print(f"Birthday: {record.birthday}")
+                print(record)  # Используем метод __str__ для вывода контакта
                 print("-" * 30)
 
         elif choice == "5":
-            filename = input("Enter the filename to save the address book (e.g., address_book.json): ")
+            filename = input("Enter the filename to save the address book (address_book.json): ")
             book.save_to_file(filename)
             print(f"Address book saved to {filename} successfully!")
 
         elif choice == "6":
-            filename = input("Enter the filename to load the address book from (e.g., address_book.json): ")
+            filename = input("Enter the filename to load the address book from (address_book.json): ")
             book = AddressBook.load_from_file(filename)
             print(f"Address book loaded from {filename} successfully!")
 
         elif choice == "7":
+            search_query = input("Enter the search query: ")
+            found_records = book.search_records(search_query)
+            if found_records:
+                print("Search results:")
+                for record in found_records:
+                    print(record)  # Используем метод __str__ для вывода контакта
+                    print("-" * 30)
+            else:
+                print("No matching records found.")
+
+        elif choice == "8":
             print("Exiting the Address Book program. Goodbye!")
             break
 
         else:
-            print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7).")
+            print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8).")
