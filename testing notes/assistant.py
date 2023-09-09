@@ -217,6 +217,11 @@ def edit_note(note_manager):
     clear_screen()
     print("Редагувати нотатку")
     title = input("Введіть заголовок нотатки для редагування: ")
+
+    if not title:
+        input("Ви нічого не ввели, будь ласка спробуйте ще. Натисніть Enter для продовження.")
+        return
+    
     note = note_manager.search_notes(title)
 
     if note:
@@ -287,6 +292,10 @@ def sort_notes_by_tags(note_manager):
     clear_screen()
     print("Сортування нотаток за тегами")
     tag = input("Введіть тег для сортування нотаток: ")
+    if not tag:
+        input("Ви нічого не ввели, будь ласка спробуйте ще. Натисніть Enter для продовження.")
+        return
+    
     sorted_notes = note_manager.sort_notes_by_tags(tag)
 
     if sorted_notes:
