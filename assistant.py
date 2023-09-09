@@ -1,9 +1,9 @@
 import os
 import sys
 from datetime import datetime, timedelta
-from contact_manager import ContactManager
+# from contact_manager import ContactManager
 from note_manager import NoteManager
-from file_manager import FileManager
+# from file_manager import FileManager
 
 def clear_screen():
     if os.name == 'posix':
@@ -33,136 +33,141 @@ def main_menu():
         else:
             input("Некоректний вибір. Натисніть Enter для продовження.")
 
-def contacts_menu():
-    contact_manager = ContactManager("contacts.json")
+# def contacts_menu():
+#     contact_manager = ContactManager("contacts.json")
 
-    while True:
-        clear_screen()
-        print("Контакти")
-        print("1. Додати контакт")
-        print("2. Редагувати контакт")
-        print("3. Видалити контакт")
-        print("4. Пошук контактів")
-        print("5. День народження")
-        print("6. Назад")
+#     while True:
+#         clear_screen()
+#         print("Контакти")
+#         print("1. Додати контакт")
+#         print("2. Редагувати контакт")
+#         print("3. Видалити контакт")
+#         print("4. Пошук контактів")
+#         print("5. День народження")
+#         print("6. Назад")
 
-        choice = input("Оберіть опцію (1/2/3/4/5/6): ")
+#         choice = input("Оберіть опцію (1/2/3/4/5/6): ")
 
-        if choice == "1":
-            add_contact(contact_manager)
-        elif choice == "2":
-            edit_contact(contact_manager)
-        elif choice == "3":
-            delete_contact(contact_manager)
-        elif choice == "4":
-            search_contacts(contact_manager)
-        elif choice == "5":
-            upcoming_birthdays(contact_manager)
-        elif choice == "6":
-            return
-        else:
-            input("Некоректний вибір. Натисніть Enter для продовження.")
+#         if choice == "1":
+#             add_contact(contact_manager)
+#         elif choice == "2":
+#             edit_contact(contact_manager)
+#         elif choice == "3":
+#             delete_contact(contact_manager)
+#         elif choice == "4":
+#             search_contacts(contact_manager)
+#         elif choice == "5":
+#             upcoming_birthdays(contact_manager)
+#         elif choice == "6":
+#             return
+#         else:
+#             input("Некоректний вибір. Натисніть Enter для продовження.")
 
-def add_contact(contact_manager):
-    clear_screen()
-    print("Додати контакт")
-    name = input("Ім'я: ")
-    address = input("Адреса: ")
-    phone = input("Номер телефону: ")
-    email = input("Email: ")
-    birthday = input("День народження (рррр-мм-дд): ")
+# def add_contact(contact_manager):
+#     clear_screen()
+#     print("Додати контакт")
+#     name = input("Ім'я: ")
+#     address = input("Адреса: ")
+#     phone = input("Номер телефону: ")
+#     email = input("Email: ")
+#     birthday = input("День народження (рррр-мм-дд): ")
 
-    try:
-        contact_manager.add_contact(name, address, phone, email, birthday)
-        input("Контакт успішно додано. Натисніть Enter для продовження.")
-    except ValueError as e:
-        input(f"Помилка: {e}. Натисніть Enter для продовження.")
+#     try:
+#         contact_manager.add_contact(name, address, phone, email, birthday)
+#         input("Контакт успішно додано. Натисніть Enter для продовження.")
+#     except ValueError as e:
+#         input(f"Помилка: {e}. Натисніть Enter для продовження.")
 
-def edit_contact(contact_manager):
-    clear_screen()
-    print("Редагувати контакт")
-    phone = input("Введіть номер телефону контакта для редагування: ")
-    contact = contact_manager.get_contact(phone)
+# def edit_contact(contact_manager):
+#     clear_screen()
+#     print("Редагувати контакт")
+#     phone = input("Введіть номер телефону контакта для редагування: ")
+#     contact = contact_manager.get_contact(phone)
 
-    if contact:
-        print("Поточні дані:")
-        print(f"Ім'я: {contact['name']}")
-        print(f"Адреса: {contact['address']}")
-        print(f"Номер телефону: {contact['phone']}")
-        print(f"Email: {contact['email']}")
-        print(f"День народження: {contact['birthday']}")
+#     if contact:
+#         print("Поточні дані:")
+#         print(f"Ім'я: {contact['name']}")
+#         print(f"Адреса: {contact['address']}")
+#         print(f"Номер телефону: {contact['phone']}")
+#         print(f"Email: {contact['email']}")
+#         print(f"День народження: {contact['birthday']}")
 
-        name = input("Нове ім'я (або Enter для збереження поточного): ")
-        address = input("Нова адреса (або Enter для збереження поточної): ")
-        email = input("Новий email (або Enter для збереження поточного): ")
-        birthday = input("Новий день народження (рррр-мм-дд) (або Enter для збереження поточного): ")
+#         name = input("Нове ім'я (або Enter для збереження поточного): ")
+#         address = input("Нова адреса (або Enter для збереження поточної): ")
+#         email = input("Новий email (або Enter для збереження поточного): ")
+#         birthday = input("Новий день народження (рррр-мм-дд) (або Enter для збереження поточного): ")
 
-        try:
-            contact_manager.edit_contact(phone, name, address, email, birthday)
-            input("Контакт успішно відредаговано. Натисніть Enter для продовження.")
-        except ValueError as e:
-            input(f"Помилка: {e}. Натисніть Enter для продовження.")
-    else:
-        input("Контакт з таким номером телефону не існує. Натисніть Enter для продовження.")
+#         try:
+#             contact_manager.edit_contact(phone, name, address, email, birthday)
+#             input("Контакт успішно відредаговано. Натисніть Enter для продовження.")
+#         except ValueError as e:
+#             input(f"Помилка: {e}. Натисніть Enter для продовження.")
+#     else:
+#         input("Контакт з таким номером телефону не існує. Натисніть Enter для продовження.")
 
-def delete_contact(contact_manager):
-    clear_screen()
-    print("Видалити контакт")
-    phone = input("Введіть номер телефону контакта для видалення: ")
-    contact = contact_manager.get_contact(phone)
+# def delete_contact(contact_manager):
+#     clear_screen()
+#     print("Видалити контакт")
+#     phone = input("Введіть номер телефону контакта для видалення: ")
+#     contact = contact_manager.get_contact(phone)
 
-    if contact:
-        print("Дані контакту:")
-        print(f"Ім'я: {contact['name']}")
-        print(f"Адреса: {contact['address']}")
-        print(f"Номер телефону: {contact['phone']}")
-        print(f"Email: {contact['email']}")
-        print(f"День народження: {contact['birthday']}")
+#     if contact:
+#         print("Дані контакту:")
+#         print(f"Ім'я: {contact['name']}")
+#         print(f"Адреса: {contact['address']}")
+#         print(f"Номер телефону: {contact['phone']}")
+#         print(f"Email: {contact['email']}")
+#         print(f"День народження: {contact['birthday']}")
 
-        confirmation = input("Ви впевнені, що хочете видалити цей контакт? (Так/Ні): ")
+#         confirmation = input("Ви впевнені, що хочете видалити цей контакт? (Так/Ні): ")
 
-        if confirmation.lower() == "так":
-            contact_manager.delete_contact(phone)
-            input("Контакт успішно видалено. Натисніть Enter для продовження.")
-    else:
-        input("Контакт з таким номером телефону не існує. Натисніть Enter для продовження.")
+#         if confirmation.lower() == "так":
+#             contact_manager.delete_contact(phone)
+#             input("Контакт успішно видалено. Натисніть Enter для продовження.")
+#     else:
+#         input("Контакт з таким номером телефону не існує. Натисніть Enter для продовження.")
 
-def search_contacts(contact_manager):
-    clear_screen()
-    print("Пошук контактів")
-    query = input("Введіть пошуковий запит (ім'я, email або номер телефону): ")
-    results = contact_manager.search_contacts(query)
+# def search_contacts(contact_manager):
+#     clear_screen()
+#     print("Пошук контактів")
+#     query = input("Введіть пошуковий запит (ім'я, email або номер телефону): ")
+#     results = contact_manager.search_contacts(query)
 
-    if results:
-        print("Результати пошуку:")
-        for i, contact in enumerate(results, start=1):
-            print(f"{i}. {contact['name']} ({contact['phone']}) - {contact['email']}")
+#     if results:
+#         print("Результати пошуку:")
+#         for i, contact in enumerate(results, start=1):
+#             print(f"{i}. {contact['name']} ({contact['phone']}) - {contact['email']}")
 
-        input("Натисніть Enter для продовження.")
-    else:
-        input("За вашим запитом не знайдено жодного контакту. Натисніть Enter для продовження.")
+#         input("Натисніть Enter для продовження.")
+#     else:
+#         input("За вашим запитом не знайдено жодного контакту. Натисніть Enter для продовження.")
 
-def upcoming_birthdays(contact_manager):
-    clear_screen()
-    print("Дні народження")
-    days = int(input("Введіть кількість днів для пошуку близьких днів народження: "))
+# def upcoming_birthdays(contact_manager):
+#     clear_screen()
+#     print("Дні народження")
+#     days = int(input("Введіть кількість днів для пошуку близьких днів народження: "))
 
-    today = datetime.now()
-    upcoming_date = today + timedelta(days=days)
-    upcoming_birthday_contacts = contact_manager.get_upcoming_birthday_contacts(days)
+#     today = datetime.now()
+#     upcoming_date = today + timedelta(days=days)
+#     upcoming_birthday_contacts = contact_manager.get_upcoming_birthday_contacts(days)
 
-    if upcoming_birthday_contacts:
-        print(f"Контакти з близькими днями народження (через {days} днів):")
-        for contact in upcoming_birthday_contacts:
-            birthday_date = datetime.strptime(contact['birthday'], "%Y-%m-%d")
-            days_until_birthday = (birthday_date - today).days
-            print(f"{contact['name']} ({contact['phone']}) - {contact['birthday']} (через {days_until_birthday} днів)")
+#     if upcoming_birthday_contacts:
+#         print(f"Контакти з близькими днями народження (через {days} днів):")
+#         for contact in upcoming_birthday_contacts:
+#             birthday_date = datetime.strptime(contact['birthday'], "%Y-%m-%d")
+#             days_until_birthday = (birthday_date - today).days
+#             print(f"{contact['name']} ({contact['phone']}) - {contact['birthday']} (через {days_until_birthday} днів)")
 
-        input("Натисніть Enter для продовження.")
-    else:
-        input("На жаль, за заданий період близьких днів народження не знайдено. Натисніть Enter для продовження.")
+#         input("Натисніть Enter для продовження.")
+#     else:
+#         input("На жаль, за заданий період близьких днів народження не знайдено. Натисніть Enter для продовження.")
+
+
+
 
 ########################################################        BLOCK NOTES     ##############################################################################
+
+
 
 def notes_menu():
     note_manager = NoteManager("notes.json")
@@ -354,27 +359,31 @@ def clear_all_notes(note_manager):
     else:
         input("Некоректний ввід, дію скасовано. Натисніть Enter для продовження.")
 
+
+
 #################################################################################################################################
 
-def files_menu():
-    folder_path = "your_folder"  # Замініть на шлях до папки, яку ви хочете сортувати
-    file_manager = FileManager(folder_path)
 
-    while True:
-        clear_screen()
-        print("2Файли")
-        print("1. Сортувати файли за категоріями")
-        print("2. Назад")
 
-        choice = input("Оберіть опцію (1/2): ")
+# def files_menu():
+#     folder_path = "your_folder"  # Замініть на шлях до папки, яку ви хочете сортувати
+#     file_manager = FileManager(folder_path)
 
-        if choice == "1":
-            file_manager.sort_files_by_category()
-            input("Файли успішно відсортовано за категоріями. Натисніть Enter для продовження.")
-        elif choice == "2":
-            return
-        else:
-            input("Некоректний вибір. Натисніть Enter для продовження.")
+#     while True:
+#         clear_screen()
+#         print("2Файли")
+#         print("1. Сортувати файли за категоріями")
+#         print("2. Назад")
+
+#         choice = input("Оберіть опцію (1/2): ")
+
+#         if choice == "1":
+#             file_manager.sort_files_by_category()
+#             input("Файли успішно відсортовано за категоріями. Натисніть Enter для продовження.")
+#         elif choice == "2":
+#             return
+#         else:
+#             input("Некоректний вибір. Натисніть Enter для продовження.")
 
 if __name__ == "__main__":
     main_menu()
