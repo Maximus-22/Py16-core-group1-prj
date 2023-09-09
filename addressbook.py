@@ -287,12 +287,12 @@ if __name__ == "__main__":
                 print("-" * 30)
 
         elif choice == "5":
-            filename = input("Enter the filename to save the address book (e.g., address_book.json): ")
+            filename = input("Enter the filename to save the address book (address_book.json): ")
             book.save_to_file(filename)
             print(f"Address book saved to {filename} successfully!")
 
         elif choice == "6":
-            filename = input("Enter the filename to load the address book from (e.g., address_book.json): ")
+            filename = input("Enter the filename to load the address book from (address_book.json): ")
             book = AddressBook.load_from_file(filename)
             print(f"Address book loaded from {filename} successfully!")
 
