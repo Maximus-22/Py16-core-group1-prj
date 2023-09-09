@@ -139,7 +139,9 @@ class AddressBook(UserDict):
             json.dump(data, file, ensure_ascii = False, indent = 4)
 
     @classmethod
-    def load_from_file(cls, filename = "addressbook.json"):
+    def load_from_file(cls, filename):
+        if filename == "":
+            filename = "addressbook.json"
         if os.path.exists(filename):
             try:
                 with open(filename, "r", encoding = "UTF-8") as file:
