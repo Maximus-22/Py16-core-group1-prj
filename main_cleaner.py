@@ -1,10 +1,5 @@
 from pathlib import Path
-import re, shutil, sys
-# import sys
-# from pathlib import Path
-
-# import file_parser as parser
-# from normalize import normalize
+import re, shutil
 
 
 # Section of Normalize

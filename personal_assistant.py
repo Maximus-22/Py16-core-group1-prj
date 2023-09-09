@@ -1,8 +1,9 @@
 import os, subprocess, sys
+from colorama import Fore, Style
 from datetime import datetime, timedelta
-# from config_addressbook import ContactManager  # тепер файл config_addressbook.py
+from prettytable import PrettyTable
+from config_addressbook import Address, AddressBook, Birthday, Email, Name, Phone, Record
 from config_notes import NoteManager
-# from file_manager import FileManager
 import main_cleaner as folder_cleaner
 import main_minicalc
 
@@ -53,133 +54,174 @@ def main_menu():
 
 # SECTION OF CONTACTS
 def contacts_menu():
-    contact_manager = ContactManager("contacts.json")
+    book = AddressBook()
 
     while True:
-        clear_screen()
-        print("Контакти")
-        print("1. Додати контакт")
-        print("2. Редагувати контакт")
-        print("3. Видалити контакт")
-        print("4. Пошук контактів")
-        print("5. День народження")
-        print("6. Назад")
+        menu = PrettyTable()
+        menu.field_names = [Fore.BLUE + "Option", Fore.BLUE + "Description"]
 
-        choice = input("Оберіть опцію (1/2/3/4/5/6): ")
+        menu.add_row(["1", "Add a Contact"])
+        menu.add_row(["2", "Edit a Contact"])
+        menu.add_row(["3", "Delete a Contact"])
+        menu.add_row(["4", "List All Contacts"])
+        menu.add_row(["5", "Save Address Book"])
+        menu.add_row(["6", "Load Address Book"])
+        menu.add_row(["7", "Search Contacts"])
+        menu.add_row(["8", "View Upcoming Birthdays"])
+        menu.add_row(["9", "Exit"])
+
+        print(Fore.BLUE + "Address Book Menu:")
+        print(menu)
+
+        choice = input(Fore.YELLOW + "Enter your choice (1/2/3/4/5/6/7/8/9): " + Style.RESET_ALL)
 
         if choice == "1":
-            add_contact(contact_manager)
+            while True:
+                print("Enter contact details (or enter '0' to exit):")
+                name = input("Enter the contact's name: ")
+                if name == '0':
+                    break
+
+                address = input("Enter the contact's address: ")
+                phone = input("Enter the contact's phone number: ")
+                email = input("Enter the contact's email address: ")
+                birthday = input("Enter the contact's birthday (YYYY-MM-DD): ")
+
+                if name and address and phone and email and birthday:
+                    try:
+                        name_field = Name(name)
+                        address_field = Address(address)
+                        phone_field = Phone(phone)
+                        email_field = Email(email)
+                        birthday_field = Birthday(datetime.strptime(birthday, "%Y-%m-%d"))
+                        record = Record(name_field, address_field, [phone_field], [email_field], birthday_field)
+                        book.add_record(record)
+                        print(f"Contact {name} added successfully!")
+                        break
+                    except ValueError as e:
+                        print(f"Error: {e}")
+                        print("Please enter valid data.")
+                else:
+                    print("All fields are required. Please try again or enter '0' to cancel.")
+
         elif choice == "2":
-            edit_contact(contact_manager)
+            name = input("Enter the contact's name to edit: ")
+            if name in book.data:
+                record = book.data[name]
+                print(f"Editing Contact: {record.name}")
+                print("1. Edit Name")
+                print("2. Edit Address")
+                print("3. Edit Phone")
+                print("4. Edit Email")
+                print("5. Edit Birthday")
+                edit_choice = input("Enter your choice (1/2/3/4/5): ")
+
+                if edit_choice == "1":
+                    while True:
+                        new_name = input("Enter the new name: ")
+                        try:
+                            record.name = new_name
+                            print(f"Contact {name} name updated to {new_name}")
+                            break
+                        except ValueError as e:
+                            print(f"Error: {e}")
+                            print("Please enter a valid name.")
+
+                elif edit_choice == "2":
+                    while True:
+                        new_address = input("Enter the new address: ")
+                        try:
+                            record.address = new_address
+                            print(f"Address updated for {record.name}")
+                            break
+                        except ValueError as e:
+                            print(f"Error: {e}")
+                            print("Please enter a valid address.")
+
+                elif edit_choice == "3":
+                    old_phone = input("Enter the old phone number: ")
+                    while True:
+                        new_phone = input("Enter the new phone number: ")
+                        try:
+                            record.edit_phone(old_phone, new_phone)
+                            print(f"Phone number updated for {record.name}")
+                            break
+                        except ValueError as e:
+                            print(f"Error: {e}")
+                            print("Please enter a valid phone number.")
+
+                elif edit_choice == "4":
+                    while True:
+                        new_email = input("Enter the new email address: ")
+                        try:
+                            record.emails[0] = new_email
+                            print(f"Email address updated for {record.name}")
+                            break
+                        except ValueError as e:
+                            print(f"Error: {e}")
+                            print("Please enter a valid email address.")
+
+                elif edit_choice == "5":
+                    while True:
+                        new_birthday = input("Enter the new birthday (YYYY-MM-DD): ")
+                        try:
+                            record.birthday = Birthday(datetime.strptime(new_birthday, "%Y-%m-%d"))
+                            print(f"Birthday updated for {record.name}")
+                            break
+                        except ValueError as e:
+                            print(f"Error: {e}")
+                            print("Please enter a valid birthday (YYYY-MM-DD).")
+
         elif choice == "3":
-            delete_contact(contact_manager)
+            name = input("Enter the contact's name to delete: ")
+            if name in book.data:
+                del book.data[name]
+                print(f"Contact {name} deleted successfully!")
+
         elif choice == "4":
-            search_contacts(contact_manager)
+            print("List of All Contacts:")
+            for record in book.data.values():
+                print(record)
+                print("-" * 30)
+
         elif choice == "5":
-            upcoming_birthdays(contact_manager)
+            filename = input("Enter the filename to save the address book (address_book.json): ")
+            book.save_to_file(filename)
+            print(f"Address book saved to {filename} successfully!")
+
         elif choice == "6":
-            return
+            filename = input("Enter the filename to load the address book from (address_book.json): ")
+            book = AddressBook.load_from_file(filename)
+            print(f"Address book loaded from {filename} successfully!")
+
+        elif choice == "7":
+            query = input("Enter a search query: ")
+            found_records = book.search_records(query)
+            if found_records:
+                print("Search Results:")
+                for record in found_records:
+                    print(record)
+                    print("-" * 30)
+            else:
+                print("No matching records found.")
+
+        elif choice == "8":
+            days = int(input("Enter the number of days for upcoming birthdays: "))
+            upcoming_birthday_contacts = book.get_upcoming_birthday_contacts(days)
+            if upcoming_birthday_contacts:
+                print(f"Upcoming Birthdays in {days} days:")
+                for record in upcoming_birthday_contacts:
+                    print(record)
+                    print("-" * 30)
+            else:
+                print("No upcoming birthdays found.")
+
+        elif choice == "9":
+            print("Exiting the Address Book program. Goodbye!")
+            break
+
         else:
-            input("Некоректний вибір. Натисніть Enter для продовження.")
-
-def add_contact(contact_manager):
-    clear_screen()
-    print("Додати контакт")
-    name = input("Ім'я: ")
-    address = input("Адреса: ")
-    phone = input("Номер телефону [+38]: ")
-    email = input("Email: ")
-    birthday = input("День народження (рррр-мм-дд): ")
-
-    try:
-        contact_manager.add_contact(name, address, phone, email, birthday)
-        input("Контакт успішно додано. Натисніть Enter для продовження.")
-    except ValueError as e:
-        input(f"Помилка: {e}. Натисніть Enter для продовження.")
-
-def edit_contact(contact_manager):
-    clear_screen()
-    print("Редагувати контакт")
-    phone = input("Введіть номер телефону контакта для редагування: ")
-    contact = contact_manager.get_contact(phone)
-
-    if contact:
-        print("Поточні дані:")
-        print(f"Ім'я: {contact['name']}")
-        print(f"Адреса: {contact['address']}")
-        print(f"Номер телефону: {contact['phone']}")
-        print(f"Email: {contact['email']}")
-        print(f"День народження: {contact['birthday']}")
-
-        name = input("Нове ім'я (або Enter для збереження поточного): ")
-        address = input("Нова адреса (або Enter для збереження поточної): ")
-        email = input("Новий email (або Enter для збереження поточного): ")
-        birthday = input("Новий день народження (рррр-мм-дд) (або Enter для збереження поточного): ")
-
-        try:
-            contact_manager.edit_contact(phone, name, address, email, birthday)
-            input("Контакт успішно відредаговано. Натисніть Enter для продовження.")
-        except ValueError as e:
-            input(f"Помилка: {e}. Натисніть Enter для продовження.")
-    else:
-        input("Контакт з таким номером телефону не існує. Натисніть Enter для продовження.")
-
-def delete_contact(contact_manager):
-    clear_screen()
-    print("Видалити контакт")
-    phone = input("Введіть номер телефону контакта для видалення: ")
-    contact = contact_manager.get_contact(phone)
-
-    if contact:
-        print("Дані контакту:")
-        print(f"Ім'я: {contact['name']}")
-        print(f"Адреса: {contact['address']}")
-        print(f"Номер телефону: {contact['phone']}")
-        print(f"Email: {contact['email']}")
-        print(f"День народження: {contact['birthday']}")
-
-        confirmation = input("Ви впевнені, що хочете видалити цей контакт? (Так/Ні): ")
-
-        if confirmation.lower() == "так":
-            contact_manager.delete_contact(phone)
-            input("Контакт успішно видалено. Натисніть Enter для продовження.")
-    else:
-        input("Контакт з таким номером телефону не існує. Натисніть Enter для продовження.")
-
-def search_contacts(contact_manager):
-    clear_screen()
-    print("Пошук контактів")
-    query = input("Введіть пошуковий запит (ім'я, email або номер телефону): ")
-    results = contact_manager.search_contacts(query)
-
-    if results:
-        print("Результати пошуку:")
-        for i, contact in enumerate(results, start=1):
-            print(f"{i}. {contact['name']} ({contact['phone']}) - {contact['email']}")
-
-        input("Натисніть Enter для продовження.")
-    else:
-        input("За вашим запитом не знайдено жодного контакту. Натисніть Enter для продовження.")
-
-def upcoming_birthdays(contact_manager):
-    clear_screen()
-    print("Дні народження")
-    days = int(input("Введіть кількість днів для пошуку близьких днів народження: "))
-
-    today = datetime.now()
-    upcoming_date = today + timedelta(days=days)
-    upcoming_birthday_contacts = contact_manager.get_upcoming_birthday_contacts(days)
-
-    if upcoming_birthday_contacts:
-        print(f"Контакти з близькими днями народження (через {days} днів):")
-        for contact in upcoming_birthday_contacts:
-            birthday_date = datetime.strptime(contact['birthday'], "%Y-%m-%d")
-            days_until_birthday = (birthday_date - today).days
-            print(f"{contact['name']} ({contact['phone']}) - {contact['birthday']} (через {days_until_birthday} днів)")
-
-        input("Натисніть Enter для продовження.")
-    else:
-        input("На жаль, за заданий період близьких днів народження не знайдено. Натисніть Enter для продовження.")
+            print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8/9).")
 
 
 # SECTION OF NOTES

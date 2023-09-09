@@ -1,5 +1,4 @@
-import json
-import re
+import json, re
 from datetime import datetime
 from prettytable import PrettyTable
 from collections import UserDict
