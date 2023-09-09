@@ -57,6 +57,7 @@ def contacts_menu():
     book = AddressBook()
 
     while True:
+        clear_screen()
         menu = PrettyTable()
         menu.field_names = [Fore.BLUE + "Option", Fore.BLUE + "Description"]
 
@@ -96,13 +97,16 @@ def contacts_menu():
                         birthday_field = Birthday(datetime.strptime(birthday, "%Y-%m-%d"))
                         record = Record(name_field, address_field, [phone_field], [email_field], birthday_field)
                         book.add_record(record)
-                        print(f"Contact {name} added successfully!")
+                        # print(f"Contact {name} added successfully!")
+                        input(f"Contact {name} added successfully!\nPress [Enter] to continue.")
                         break
                     except ValueError as e:
                         print(f"Error: {e}")
-                        print("Please enter valid data.")
+                        # print("Please enter valid data.")
+                        input("Please enter valid data.\nPress [Enter] to continue.")
                 else:
-                    print("All fields are required. Please try again or enter '0' to cancel.")
+                    # print("All fields are required. Please try again or enter '0' to cancel.\nPress [Enter] to continue.")
+                    input("All fields are required. Please try again or enter '0' to cancel.\nPress [Enter] to continue.")
 
         elif choice == "2":
             name = input("Enter the contact's name to edit: ")
@@ -121,22 +125,26 @@ def contacts_menu():
                         new_name = input("Enter the new name: ")
                         try:
                             record.name = new_name
-                            print(f"Contact {name} name updated to {new_name}")
+                            # print(f"Contact {name} name updated to {new_name}")
+                            input(f"Contact {name} name updated to {new_name}.\nPress [Enter] to continue.")
                             break
                         except ValueError as e:
                             print(f"Error: {e}")
-                            print("Please enter a valid name.")
+                            # print("Please enter a valid name.")
+                            input("Please enter a valid name.\nPress [Enter] to continue.")
 
                 elif edit_choice == "2":
                     while True:
                         new_address = input("Enter the new address: ")
                         try:
                             record.address = new_address
-                            print(f"Address updated for {record.name}")
+                            # print(f"Address updated for {record.name}.")
+                            input(f"Address updated for {record.name}.\nPress [Enter] to continue.")
                             break
                         except ValueError as e:
                             print(f"Error: {e}")
-                            print("Please enter a valid address.")
+                            # print("Please enter a valid address.")
+                            input("Please enter a valid address.\nPress [Enter] to continue.")
 
                 elif edit_choice == "3":
                     old_phone = input("Enter the old phone number: ")
@@ -144,55 +152,65 @@ def contacts_menu():
                         new_phone = input("Enter the new phone number: ")
                         try:
                             record.edit_phone(old_phone, new_phone)
-                            print(f"Phone number updated for {record.name}")
+                            # print(f"Phone number updated for {record.name}")
+                            input(f"Phone number updated for {record.name}.\nPress [Enter] to continue.")
                             break
                         except ValueError as e:
                             print(f"Error: {e}")
-                            print("Please enter a valid phone number.")
+                            # print("Please enter a valid phone number.")
+                            input("Please enter a valid phone number.\nPress [Enter] to continue.")
 
                 elif edit_choice == "4":
                     while True:
                         new_email = input("Enter the new email address: ")
                         try:
                             record.emails[0] = new_email
-                            print(f"Email address updated for {record.name}")
+                            # print(f"Email address updated for {record.name}")
+                            input(f"Email address updated for {record.name}.\nPress [Enter] to continue.")
                             break
                         except ValueError as e:
                             print(f"Error: {e}")
-                            print("Please enter a valid email address.")
+                            # print("Please enter a valid email address.")
+                            input("Please enter a valid email address.\nPress [Enter] to continue.")
 
                 elif edit_choice == "5":
                     while True:
                         new_birthday = input("Enter the new birthday (YYYY-MM-DD): ")
                         try:
                             record.birthday = Birthday(datetime.strptime(new_birthday, "%Y-%m-%d"))
-                            print(f"Birthday updated for {record.name}")
+                            # print(f"Birthday updated for {record.name}")
+                            input(f"Birthday updated for {record.name}.\nPress [Enter] to continue.")
                             break
                         except ValueError as e:
                             print(f"Error: {e}")
-                            print("Please enter a valid birthday (YYYY-MM-DD).")
+                            # print("Please enter a valid birthday (YYYY-MM-DD).")
+                            input("Please enter a valid birthday (YYYY-MM-DD).\nPress [Enter] to continue.")
 
         elif choice == "3":
             name = input("Enter the contact's name to delete: ")
             if name in book.data:
                 del book.data[name]
-                print(f"Contact {name} deleted successfully!")
+                # print(f"Contact {name} deleted successfully!")
+                input(f"Contact {name} deleted successfully!\nPress [Enter] to continue.")
 
         elif choice == "4":
             print("List of All Contacts:")
             for record in book.data.values():
                 print(record)
                 print("-" * 30)
+            input("Press [Enter] to continue.")
 
         elif choice == "5":
-            filename = input("Enter the filename to save the address book (address_book.json): ")
+            filename = input("Enter the filename to save the address book (addressbook.json): ")
             book.save_to_file(filename)
-            print(f"Address book saved to {filename} successfully!")
+            # print(f"Address book saved to {filename} successfully!")
+            input(f"Address book saved to {filename} successfully!")
 
         elif choice == "6":
-            filename = input("Enter the filename to load the address book from (address_book.json): ")
+            filename = input("Enter the filename to load the address book from (addressbook.json): ")
             book = AddressBook.load_from_file(filename)
-            print(f"Address book loaded from {filename} successfully!")
+            # print(f"Address book loaded from {filename} successfully!\nPress [Enter] to continue.")
+            input(f"Address book loaded from {filename} successfully!\nPress [Enter] to continue.")
 
         elif choice == "7":
             query = input("Enter a search query: ")
@@ -202,8 +220,10 @@ def contacts_menu():
                 for record in found_records:
                     print(record)
                     print("-" * 30)
+                input("Press [Enter] to continue.")
             else:
-                print("No matching records found.")
+                # print("No matching records found.")
+                input("No matching records found.\nPress [Enter] to continue.")
 
         elif choice == "8":
             days = int(input("Enter the number of days for upcoming birthdays: "))
@@ -213,15 +233,18 @@ def contacts_menu():
                 for record in upcoming_birthday_contacts:
                     print(record)
                     print("-" * 30)
+                input("Press [Enter] to continue.")
             else:
-                print("No upcoming birthdays found.")
+                # print("No upcoming birthdays found.")
+                input("No upcoming birthdays found.\nPress [Enter] to continue.")
 
         elif choice == "9":
             print("Exiting the Address Book program. Goodbye!")
             break
 
         else:
-            print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8/9).")
+            # print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8/9).")
+            input("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8/9).")
 
 
 # SECTION OF NOTES

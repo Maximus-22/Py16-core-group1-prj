@@ -1,4 +1,4 @@
-import json, re
+import json, os, re
 from datetime import datetime
 from prettytable import PrettyTable
 from collections import UserDict
@@ -126,7 +126,9 @@ class AddressBook(UserDict):
         return self.data.values()
 
     def save_to_file(self, filename):
-        with open(filename, 'w') as file:
+        if filename == "":
+            filename = "addressbook.json"
+        with open(filename, "w", encoding = "UTF-8") as file:
             data = {
                 "records": [record.__dict__ for record in self.values()]
             }
@@ -134,25 +136,26 @@ class AddressBook(UserDict):
             for record_data in data["records"]:
                 if record_data["birthday"]:
                     record_data["birthday"] = record_data["birthday"].value.strftime('%Y-%m-%d')
-            json.dump(data, file, indent=4)
+            json.dump(data, file, ensure_ascii = False, indent = 4)
 
     @classmethod
-    def load_from_file(cls, filename):
-        try:
-            with open(filename, 'r') as file:
-                data = json.load(file)
-                book = cls()
-                for record_data in data["records"]:
-                    name = Name(record_data["name"])
-                    address = Address(record_data["address"])
-                    phones = [Phone(phone) for phone in record_data["phones"]]
-                    emails = [Email(email) for email in record_data["emails"]]
-                    birthday = Birthday(datetime.strptime(record_data["birthday"], "%Y-%m-%d")) if record_data["birthday"] else None
-                    record = Record(name, address, phones, emails, birthday)
-                    book.add_record(record)
-                return book
-        except FileNotFoundError:
-            return cls()
+    def load_from_file(cls, filename = "addressbook.json"):
+        if os.path.exists(filename):
+            try:
+                with open(filename, "r", encoding = "UTF-8") as file:
+                    data = json.load(file)
+                    book = cls()
+                    for record_data in data["records"]:
+                        name = Name(record_data["name"])
+                        address = Address(record_data["address"])
+                        phones = [Phone(phone) for phone in record_data["phones"]]
+                        emails = [Email(email) for email in record_data["emails"]]
+                        birthday = Birthday(datetime.strptime(record_data["birthday"], "%Y-%m-%d")) if record_data["birthday"] else None
+                        record = Record(name, address, phones, emails, birthday)
+                        book.add_record(record)
+                    return book
+            except FileNotFoundError:
+                return cls()
 
     def search_records(self, query):
         query = query.lower()
