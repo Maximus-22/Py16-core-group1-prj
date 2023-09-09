@@ -291,21 +291,28 @@ def search_notes(note_manager):
 def sort_notes_by_tags(note_manager):
     clear_screen()
     print("Сортування нотаток за тегами")
-    tag = input("Введіть тег для сортування нотаток: ")
-    if not tag:
+    tags_input = input("Введіть теги (через кому) для сортування: ")
+    tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+
+    if not tags:
         input("Ви нічого не ввели, будь ласка спробуйте ще. Натисніть Enter для продовження.")
         return
     
-    sorted_notes = note_manager.sort_notes_by_tags(tag)
+    sorted_notes = []
+
+    for tag in tags:
+        notes = note_manager.search_notes(tag)
+        sorted_notes.extend(notes)
 
     if sorted_notes:
-        print(f"Відсортовані нотатки за тегом '{tag}':")
+        print(f"Відсортовані нотатки за тегами '{', '.join(tags)}':")
         for i, note in enumerate(sorted_notes, start=1):
             print(f"{i}. {note['title']} - {note['body']} ({', '.join(note['tags'])})")
 
         input("Натисніть Enter для продовження.")
     else:
-        input(f"Нотатки з тегом '{tag}' не знайдені. Натисніть Enter для продовження.")
+        input(f"Нотатки з тегами '{', '.join(tags)}' не знайдені. Натисніть Enter для продовження.")
+
 
 def show_all_notes(note_manager):
     print("Всі нотатки:")
