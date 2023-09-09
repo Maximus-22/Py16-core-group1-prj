@@ -206,6 +206,9 @@ def add_note(note_manager):
     print("Додати нотатку")
     title = input("Заголовок: ")
     body = input("Тіло нотатки: ")
+    if not body:
+        input("Поле 'Тіло нотатки' не може бути пустим. Натисніть Enter для продовження.")
+        return
     tags = input("Теги (через кому): ").split(',')
 
     note_manager.add_note(title, body, tags)
@@ -219,7 +222,7 @@ def edit_note(note_manager):
 
     if note:
         note = note[0]
-        
+
         print("Поточні дані:")
         print(f"Заголовок: {note['title']}")
         print(f"Тіло нотатки: {note['body']}")
