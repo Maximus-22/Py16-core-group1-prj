@@ -151,6 +151,22 @@ class AddressBook(UserDict):
                     found_records.append(record)
         return found_records
 
+    def get_upcoming_birthday_contacts(self, days):
+        today = datetime.now().date()
+        upcoming_birthday_contacts = []
+
+        for record in self.data.values():
+            if record.birthday:
+                next_birthday = datetime(today.year, record.birthday.value.month, record.birthday.value.day).date()
+                if today > next_birthday:
+                    next_birthday = datetime(today.year + 1, record.birthday.value.month, record.birthday.value.day).date()
+                days_left = (next_birthday - today).days
+
+                if days_left == days:
+                    upcoming_birthday_contacts.append(record)
+
+        return upcoming_birthday_contacts
+
 if __name__ == "__main__":
     book = AddressBook()
 
@@ -163,9 +179,10 @@ if __name__ == "__main__":
         print("5. Save Address Book")
         print("6. Load Address Book")
         print("7. Search Contacts")
-        print("8. Exit")
+        print("8. View Upcoming Birthdays")
+        print("9. Exit")
 
-        choice = input("Enter your choice (1/2/3/4/5/6/7/8): ")
+        choice = input("Enter your choice (1/2/3/4/5/6/7/8/9): ")
 
         if choice == "1":
             while True:
@@ -266,33 +283,44 @@ if __name__ == "__main__":
         elif choice == "4":
             print("List of All Contacts:")
             for record in book.data.values():
-                print(record)  # Используем метод __str__ для вывода контакта
+                print(record)
                 print("-" * 30)
 
         elif choice == "5":
-            filename = input("Enter the filename to save the address book (address_book.json): ")
+            filename = input("Enter the filename to save the address book (e.g., address_book.json): ")
             book.save_to_file(filename)
             print(f"Address book saved to {filename} successfully!")
 
         elif choice == "6":
-            filename = input("Enter the filename to load the address book from (address_book.json): ")
+            filename = input("Enter the filename to load the address book from (e.g., address_book.json): ")
             book = AddressBook.load_from_file(filename)
             print(f"Address book loaded from {filename} successfully!")
 
         elif choice == "7":
-            search_query = input("Enter the search query: ")
-            found_records = book.search_records(search_query)
+            query = input("Enter a search query: ")
+            found_records = book.search_records(query)
             if found_records:
-                print("Search results:")
+                print("Search Results:")
                 for record in found_records:
-                    print(record)  # Используем метод __str__ для вывода контакта
+                    print(record)
                     print("-" * 30)
             else:
                 print("No matching records found.")
 
         elif choice == "8":
+            days = int(input("Enter the number of days for upcoming birthdays: "))
+            upcoming_birthday_contacts = book.get_upcoming_birthday_contacts(days)
+            if upcoming_birthday_contacts:
+                print(f"Upcoming Birthdays in {days} days:")
+                for record in upcoming_birthday_contacts:
+                    print(record)
+                    print("-" * 30)
+            else:
+                print("No upcoming birthdays found.")
+
+        elif choice == "9":
             print("Exiting the Address Book program. Goodbye!")
             break
 
         else:
-            print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8).")
+            print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8/9).")
