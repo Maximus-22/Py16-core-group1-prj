@@ -218,6 +218,8 @@ def edit_note(note_manager):
     note = note_manager.search_notes(title)
 
     if note:
+        note = note[0]
+        
         print("Поточні дані:")
         print(f"Заголовок: {note['title']}")
         print(f"Тіло нотатки: {note['body']}")
