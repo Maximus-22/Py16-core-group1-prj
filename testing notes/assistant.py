@@ -195,8 +195,6 @@ def notes_menu():
             show_all_notes(note_manager)
         elif choice == "7":
             clear_all_notes(note_manager)
-            # note_manager.clear_all_notes()
-            # input("Усі нотатки були видалені. Натисніть Enter для продовження.")
         elif choice == "8":
             return
         else:
@@ -267,6 +265,11 @@ def search_notes(note_manager):
     clear_screen()
     print("Пошук нотаток")
     query = input("Введіть пошуковий запит (заголовок або теги): ")
+
+    if not query:
+        input("Ви нічого не ввели, будь ласка спробуйте ще. Натисніть Enter для продовження.")
+        return
+    
     results = note_manager.search_notes(query)
 
     if results:
