@@ -194,8 +194,9 @@ def notes_menu():
         elif choice == "6":
             show_all_notes(note_manager)
         elif choice == "7":
-            note_manager.clear_all_notes()
-            input("Усі нотатки були видалені. Натисніть Enter для продовження.")
+            clear_all_notes(note_manager)
+            # note_manager.clear_all_notes()
+            # input("Усі нотатки були видалені. Натисніть Enter для продовження.")
         elif choice == "8":
             return
         else:
@@ -241,22 +242,26 @@ def delete_note(note_manager):
     clear_screen()
     print("Видалити нотатку")
     title = input("Введіть заголовок нотатки для видалення: ")
-    note = note_manager.search_notes(title)
+    if not title:
+        input("Поле 'Заголовок нотатки' не може бути пустим. Натисніть Enter для продовження.")
+        return
+    notes = note_manager.search_notes(title)
 
-    if note:
+    if notes:
+        note = notes[0]
         print("Дані нотатки:")
         print(f"Заголовок: {note['title']}")
         print(f"Тіло нотатки: {note['body']}")
         print(f"Теги: {', '.join(note['tags'])}")
 
-        confirmation = input("Ви впевнені, що хочете видалити цю нотатку? (Так/Ні): ")
-
+        confirmation = input(f"Ви впевнені, що хочете видалити нотатку '{note['title']}'? (Так/Ні): ")
         if confirmation.lower() == "так":
-            note_manager.delete_note(title)
+            note_manager.delete_note(note['title'])
             input("Нотатку успішно видалено. Натисніть Enter для продовження.")
+        elif confirmation.lower() == "ні":
+            input("Видалення нотатки скасовано. Натисніть Enter для продовження.")
     else:
         input("Нотатка з таким заголовком не знайдена. Натисніть Enter для продовження.")
-
 
 def search_notes(note_manager):
     clear_screen()
@@ -303,6 +308,19 @@ def show_all_notes(note_manager):
         print("Список нотаток порожній.")
 
     input("Натисніть Enter для продовження.")
+
+def clear_all_notes(note_manager):
+    clear_screen()
+    print("Видалення всіх нотаток")
+    confirmation = input("Ви впевнені, що хочете видалити всі нотатки? (Так/Ні):")
+
+    if confirmation.lower() == "так":
+        note_manager.clear_all_notes()
+        input("Усі нотатки були видалені. Натисніть Enter для продовження.")
+    elif confirmation.lower() == "ні":
+        input("Видалення всіх нотаток скасоване. Натисніть Enter для продовження.")
+    else:
+        input("Некоректний ввід, дію скасовано. Натисніть Enter для продовження.")
 
 #################################################################################################################################
 
