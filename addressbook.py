@@ -15,7 +15,7 @@ class Phone(Field):
 
     @staticmethod
     def validate_phone(value):
-        return value.isdigit() and len(value) == 10
+        return bool(re.match(r'^\d{10}$', value))
 
     def __str__(self):
         return self.value
@@ -59,9 +59,21 @@ class Record:
     def __init__(self, name: Name, address: Address, phones: list, emails: list=None, birthday: Birthday=None):
         self.name = str(name)
         self.address = str(address)
-        self.phones = [str(phone) for phone in phones]
+        self.phones = self.process_phones(phones)
         self.emails = [str(email) for email in emails] if emails else []
-        self.birthday = str(birthday) if birthday else None
+        self.birthday = birthday
+
+    def process_phones(self, phones):
+        processed_phones = []
+        for phone_field in phones:
+            phone = str(phone_field)
+            phone_numbers = re.split(r'[,\s]+', phone)
+            for phone_number in phone_numbers:
+                if Phone.validate_phone(phone_number):
+                    processed_phones.append(str(Phone(phone_number)))
+                else:
+                    raise ValueError(f"Error: Invalid phone number: {phone_number}")
+        return processed_phones
 
     def add_phone(self, phone):
         phone_number = Phone(phone)
@@ -117,6 +129,10 @@ class AddressBook(UserDict):
             data = {
                 "records": [record.__dict__ for record in self.values()]
             }
+            # Serialize birthdays to strings
+            for record_data in data["records"]:
+                if record_data["birthday"]:
+                    record_data["birthday"] = record_data["birthday"].value.strftime('%Y-%m-%d')
             json.dump(data, file, indent=4)
 
     @classmethod
@@ -157,6 +173,10 @@ class AddressBook(UserDict):
 
         for record in self.data.values():
             if record.birthday:
+                if isinstance(record.birthday, str):
+                    # If birthday is loaded as a string, parse it
+                    record.birthday = Birthday(datetime.strptime(record.birthday, "%Y-%m-%d"))
+
                 next_birthday = datetime(today.year, record.birthday.value.month, record.birthday.value.day).date()
                 if today > next_birthday:
                     next_birthday = datetime(today.year + 1, record.birthday.value.month, record.birthday.value.day).date()
@@ -166,6 +186,7 @@ class AddressBook(UserDict):
                     upcoming_birthday_contacts.append(record)
 
         return upcoming_birthday_contacts
+
 
 if __name__ == "__main__":
     book = AddressBook()
@@ -186,25 +207,32 @@ if __name__ == "__main__":
 
         if choice == "1":
             while True:
+                print("Enter contact details (or enter '0' to exit):")
                 name = input("Enter the contact's name: ")
+                if name == '0':
+                    break
+
                 address = input("Enter the contact's address: ")
                 phone = input("Enter the contact's phone number: ")
                 email = input("Enter the contact's email address: ")
                 birthday = input("Enter the contact's birthday (YYYY-MM-DD): ")
-                
-                try:
-                    name_field = Name(name)
-                    address_field = Address(address)
-                    phone_field = Phone(phone)
-                    email_field = Email(email)
-                    birthday_field = Birthday(datetime.strptime(birthday, "%Y-%m-%d"))
-                    record = Record(name_field, address_field, [phone_field], [email_field], birthday_field)
-                    book.add_record(record)
-                    print(f"Contact {name} added successfully!")
-                    break
-                except ValueError as e:
-                    print(f"Error: {e}")
-                    print("Please enter valid data.")
+
+                if name and address and phone and email and birthday:
+                    try:
+                        name_field = Name(name)
+                        address_field = Address(address)
+                        phone_field = Phone(phone)
+                        email_field = Email(email)
+                        birthday_field = Birthday(datetime.strptime(birthday, "%Y-%m-%d"))
+                        record = Record(name_field, address_field, [phone_field], [email_field], birthday_field)
+                        book.add_record(record)
+                        print(f"Contact {name} added successfully!")
+                        break
+                    except ValueError as e:
+                        print(f"Error: {e}")
+                        print("Please enter valid data.")
+                else:
+                    print("All fields are required. Please try again or enter '0' to cancel.")
 
         elif choice == "2":
             name = input("Enter the contact's name to edit: ")
@@ -267,7 +295,7 @@ if __name__ == "__main__":
                     while True:
                         new_birthday = input("Enter the new birthday (YYYY-MM-DD): ")
                         try:
-                            record.birthday = new_birthday
+                            record.birthday = Birthday(datetime.strptime(new_birthday, "%Y-%m-%d"))
                             print(f"Birthday updated for {record.name}")
                             break
                         except ValueError as e:
