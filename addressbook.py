@@ -1,7 +1,9 @@
 import json
 import re
 from datetime import datetime
+from prettytable import PrettyTable
 from collections import UserDict
+from colorama import Fore, Style
 
 class Field:
     def __init__(self, value):
@@ -192,18 +194,23 @@ if __name__ == "__main__":
     book = AddressBook()
 
     while True:
-        print("Address Book Menu:")
-        print("1. Add a Contact")
-        print("2. Edit a Contact")
-        print("3. Delete a Contact")
-        print("4. List All Contacts")
-        print("5. Save Address Book")
-        print("6. Load Address Book")
-        print("7. Search Contacts")
-        print("8. View Upcoming Birthdays")
-        print("9. Exit")
+        menu = PrettyTable()
+        menu.field_names = [Fore.BLUE + "Option", Fore.BLUE + "Description"]
 
-        choice = input("Enter your choice (1/2/3/4/5/6/7/8/9): ")
+        menu.add_row(["1", "Add a Contact"])
+        menu.add_row(["2", "Edit a Contact"])
+        menu.add_row(["3", "Delete a Contact"])
+        menu.add_row(["4", "List All Contacts"])
+        menu.add_row(["5", "Save Address Book"])
+        menu.add_row(["6", "Load Address Book"])
+        menu.add_row(["7", "Search Contacts"])
+        menu.add_row(["8", "View Upcoming Birthdays"])
+        menu.add_row(["9", "Exit"])
+
+        print(Fore.BLUE + "Address Book Menu:")
+        print(menu)
+
+        choice = input(Fore.YELLOW + "Enter your choice (1/2/3/4/5/6/7/8/9): " + Style.RESET_ALL)
 
         if choice == "1":
             while True:
