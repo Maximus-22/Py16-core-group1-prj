@@ -108,16 +108,15 @@ class Record:
     def __str__(self):
         result = f"Name: {self.name}\n"
         result += f"Address: {self.address}\n"
-        result += "Phones:\n"
-        for phone in self.phones:
-            result += f"  {phone}\n"
-        result += "Emails:\n"
-        for email in self.emails:
-            result += f"  {email}\n"
+
+        result += f"Phones: {', '.join(self.phones)}\n"
+        result += f"Emails: {', '.join(self.emails)}\n"
+
         if self.birthday:
             result += f"Birthday: {self.birthday}\n"
         result += "-" * 30
         return result
+
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
@@ -158,16 +157,25 @@ class AddressBook(UserDict):
     def search_records(self, query):
         query = query.lower()
         found_records = []
+        found_record_names = set()  
+
         for record in self.data.values():
-            if query in record.name.lower():
+            if query in record.name.lower() and record.name not in found_record_names:
                 found_records.append(record)
+                found_record_names.add(record.name)
+
             for phone in record.phones:
-                if query in phone.lower():
+                if query in phone.lower() and record.name not in found_record_names:
                     found_records.append(record)
+                    found_record_names.add(record.name)
+
             for email in record.emails:
-                if query in email.lower():
+                if query in email.lower() and record.name not in found_record_names:
                     found_records.append(record)
+                    found_record_names.add(record.name)
+
         return found_records
+
 
     def get_upcoming_birthday_contacts(self, days):
         today = datetime.now().date()
