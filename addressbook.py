@@ -20,12 +20,9 @@ class Phone(Field):
         # Check the format +38-000-0000000 or +380000000000
         if re.match(r'^\+\d{2}-\d{3}-\d{7}$', value) or re.match(r'^\+\d{12}$', value):
             return True
-
         # Check the format 000-0000000 or 0000000000
         if re.match(r'^\d{3}-\d{7}$', value) or re.match(r'^\d{10}$', value):
             return True
-
-        # If none of the above formats match, return False
         return False
 
     def __str__(self):
@@ -66,6 +63,7 @@ class Birthday(Field):
     def __str__(self):
         return self.value.strftime('%Y-%m-%d')
 
+# Record class to hold contact information
 class Record:
     def __init__(self, name: Name, address: Address, phones: list, emails: list=None, birthday: Birthday=None):
         self.name = str(name)
@@ -87,24 +85,37 @@ class Record:
         return processed_phones
 
     def add_phone(self, phone):
-        phone_number = Phone(phone)
-        if phone_number not in self.phones:
+        try:
+            phone_number = Phone(phone)
             self.phones.append(phone_number)
+            print(f"Phone number {phone} added for {self.name}")
+            self.update_record_phones()
+        except ValueError as e:
+            print(f"Error: {e}")
 
     def delete_phone(self, phone):
         new_phones = [p for p in self.phones if p.value != phone]
         self.phones = new_phones
 
     def edit_phone(self, old_phone, new_phone):
+        old_phone_found = False
         for i, phone in enumerate(self.phones):
-            if isinstance(phone, Phone) and phone.value == old_phone:
-                self.phones[i] = Phone(new_phone)
-                # Оновлення телефонів у списку об'єкта Record
-                self.update_record_phones()
+            if phone == old_phone:
+                old_phone_found = True
+                try:
+                    self.phones[i] = new_phone
+                    print(f"Phone number updated for {self.name}")
+                    print(f"Old phone number: {old_phone}")
+                    print(f"New phone number: {new_phone}")
+                except ValueError as e:
+                    print(f"Error: {e}")
+                    print("Please enter a valid phone number.")
                 break
 
+        if not old_phone_found:
+            print(f"Error: Old phone number {old_phone} not found in {self.name}'s record.")
+
     def update_record_phones(self):
-        # Оновлюємо список телефонів об'єкта Record
         self.phones = [str(phone) for phone in self.phones]
 
     def days_to_birthday(self):
@@ -130,6 +141,7 @@ class Record:
         result += "-" * 30
         return result
 
+# AddressBook class to manage contacts
 class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[record.name] = record
@@ -142,7 +154,6 @@ class AddressBook(UserDict):
             data = {
                 "records": [record.__dict__ for record in self.values()]
             }
-            # Serialize birthdays to strings
             for record_data in data["records"]:
                 if record_data["birthday"]:
                     record_data["birthday"] = record_data["birthday"].value.strftime('%Y-%m-%d')
@@ -169,7 +180,7 @@ class AddressBook(UserDict):
     def search_records(self, query):
         query = query.lower()
         found_records = []
-        found_record_names = set()  
+        found_record_names = set()
 
         for record in self.data.values():
             if query in record.name.lower() and record.name not in found_record_names:
@@ -182,9 +193,9 @@ class AddressBook(UserDict):
                     found_record_names.add(record.name)
 
             for email in record.emails:
-                if query in email.lower() and record.name not in found_record_names:
+                if query in email.lower():
                     found_records.append(record)
-                    found_record_names.add(record.name)
+                    break
 
         return found_records
 
@@ -195,7 +206,6 @@ class AddressBook(UserDict):
         for record in self.data.values():
             if record.birthday:
                 if isinstance(record.birthday, str):
-                    # If birthday is loaded as a string, parse it
                     record.birthday = Birthday(datetime.strptime(record.birthday, "%Y-%m-%d"))
 
                 next_birthday = datetime(today.year, record.birthday.value.month, record.birthday.value.day).date()
@@ -269,7 +279,6 @@ if __name__ == "__main__":
                 else:
                     print("All fields are required. Please try again or enter '0' to cancel.")
 
-
         elif choice == "2":
             name = input("Enter the contact's name to edit: ")
             if name in book.data:
@@ -305,16 +314,18 @@ if __name__ == "__main__":
                             print("Please enter a valid address.")
 
                 elif edit_choice == "3":
-                    old_phone = input("Enter the old phone number: ")
-                    while True:
+                    action = input("Enter '1' to edit an existing phone number or '2' to add a new one: ")
+                    if action == "1":
+                        old_phone = input("Enter the old phone number: ")
                         new_phone = input("Enter the new phone number: ")
                         try:
                             record.edit_phone(old_phone, new_phone)
-                            print(f"Phone number updated for {record.name}")
-                            break
                         except ValueError as e:
                             print(f"Error: {e}")
                             print("Please enter a valid phone number.")
+                    elif action == "2":
+                        new_phone = input("Enter the new phone number: ")
+                        record.add_phone(new_phone)
 
                 elif edit_choice == "4":
                     while True:
