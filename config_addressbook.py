@@ -1,5 +1,4 @@
-import json
-import re
+import json, os, re
 from datetime import datetime
 from prettytable import PrettyTable
 from collections import UserDict
@@ -17,13 +16,7 @@ class Phone(Field):
 
     @staticmethod
     def validate_phone(value):
-        # Check the format +38-000-0000000 or +380000000000
-        if re.match(r'^\+\d{2}-\d{3}-\d{7}$', value) or re.match(r'^\+\d{12}$', value):
-            return True
-        # Check the format 000-0000000 or 0000000000
-        if re.match(r'^\d{3}-\d{7}$', value) or re.match(r'^\d{10}$', value):
-            return True
-        return False
+        return bool(re.match(r'^\d{10}$', value))
 
     def __str__(self):
         return self.value
@@ -63,7 +56,6 @@ class Birthday(Field):
     def __str__(self):
         return self.value.strftime('%Y-%m-%d')
 
-# Record class to hold contact information
 class Record:
     def __init__(self, name: Name, address: Address, phones: list, emails: list=None, birthday: Birthday=None):
         self.name = str(name)
@@ -85,38 +77,19 @@ class Record:
         return processed_phones
 
     def add_phone(self, phone):
-        try:
-            phone_number = Phone(phone)
+        phone_number = Phone(phone)
+        if phone_number not in self.phones:
             self.phones.append(phone_number)
-            print(f"Phone number {phone} added for {self.name}")
-            self.update_record_phones()
-        except ValueError as e:
-            print(f"Error: {e}")
 
     def delete_phone(self, phone):
         new_phones = [p for p in self.phones if p.value != phone]
         self.phones = new_phones
 
     def edit_phone(self, old_phone, new_phone):
-        old_phone_found = False
-        for i, phone in enumerate(self.phones):
-            if phone == old_phone:
-                old_phone_found = True
-                try:
-                    self.phones[i] = new_phone
-                    print(f"Phone number updated for {self.name}")
-                    print(f"Old phone number: {old_phone}")
-                    print(f"New phone number: {new_phone}")
-                except ValueError as e:
-                    print(f"Error: {e}")
-                    print("Please enter a valid phone number.")
+        for phone in self.phones:
+            if phone.value == old_phone:
+                phone.value = new_phone
                 break
-
-        if not old_phone_found:
-            print(f"Error: Old phone number {old_phone} not found in {self.name}'s record.")
-
-    def update_record_phones(self):
-        self.phones = [str(phone) for phone in self.phones]
 
     def days_to_birthday(self):
         if not self.birthday:
@@ -134,14 +107,17 @@ class Record:
     def __str__(self):
         result = f"Name: {self.name}\n"
         result += f"Address: {self.address}\n"
-        result += f"Phones: {', '.join(self.phones)}\n"
-        result += f"Emails: {', '.join(self.emails)}\n"
+        result += "Phones:\n"
+        for phone in self.phones:
+            result += f"  {phone}\n"
+        result += "Emails:\n"
+        for email in self.emails:
+            result += f"  {email}\n"
         if self.birthday:
             result += f"Birthday: {self.birthday}\n"
         result += "-" * 30
         return result
 
-# AddressBook class to manage contacts
 class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[record.name] = record
@@ -150,53 +126,51 @@ class AddressBook(UserDict):
         return self.data.values()
 
     def save_to_file(self, filename):
-        with open(filename, 'w') as file:
+        if filename == "":
+            filename = "addressbook.json"
+        with open(filename, "w", encoding = "UTF-8") as file:
             data = {
                 "records": [record.__dict__ for record in self.values()]
             }
+            # Serialize birthdays to strings
             for record_data in data["records"]:
                 if record_data["birthday"]:
                     record_data["birthday"] = record_data["birthday"].value.strftime('%Y-%m-%d')
-            json.dump(data, file, indent=4)
+            json.dump(data, file, ensure_ascii = False, indent = 4)
 
     @classmethod
     def load_from_file(cls, filename):
-        try:
-            with open(filename, 'r') as file:
-                data = json.load(file)
-                book = cls()
-                for record_data in data["records"]:
-                    name = Name(record_data["name"])
-                    address = Address(record_data["address"])
-                    phones = [Phone(phone) for phone in record_data["phones"]]
-                    emails = [Email(email) for email in record_data["emails"]]
-                    birthday = Birthday(datetime.strptime(record_data["birthday"], "%Y-%m-%d")) if record_data["birthday"] else None
-                    record = Record(name, address, phones, emails, birthday)
-                    book.add_record(record)
-                return book
-        except FileNotFoundError:
-            return cls()
+        if filename == "":
+            filename = "addressbook.json"
+        if os.path.exists(filename):
+            try:
+                with open(filename, "r", encoding = "UTF-8") as file:
+                    data = json.load(file)
+                    book = cls()
+                    for record_data in data["records"]:
+                        name = Name(record_data["name"])
+                        address = Address(record_data["address"])
+                        phones = [Phone(phone) for phone in record_data["phones"]]
+                        emails = [Email(email) for email in record_data["emails"]]
+                        birthday = Birthday(datetime.strptime(record_data["birthday"], "%Y-%m-%d")) if record_data["birthday"] else None
+                        record = Record(name, address, phones, emails, birthday)
+                        book.add_record(record)
+                    return book
+            except FileNotFoundError:
+                return cls()
 
     def search_records(self, query):
         query = query.lower()
         found_records = []
-        found_record_names = set()
-
         for record in self.data.values():
-            if query in record.name.lower() and record.name not in found_record_names:
+            if query in record.name.lower():
                 found_records.append(record)
-                found_record_names.add(record.name)
-
             for phone in record.phones:
-                if query in phone.lower() and record.name not in found_record_names:
+                if query in phone.lower():
                     found_records.append(record)
-                    found_record_names.add(record.name)
-
             for email in record.emails:
                 if query in email.lower():
                     found_records.append(record)
-                    break
-
         return found_records
 
     def get_upcoming_birthday_contacts(self, days):
@@ -206,6 +180,7 @@ class AddressBook(UserDict):
         for record in self.data.values():
             if record.birthday:
                 if isinstance(record.birthday, str):
+                    # If birthday is loaded as a string, parse it
                     record.birthday = Birthday(datetime.strptime(record.birthday, "%Y-%m-%d"))
 
                 next_birthday = datetime(today.year, record.birthday.value.month, record.birthday.value.day).date()
@@ -217,6 +192,7 @@ class AddressBook(UserDict):
                     upcoming_birthday_contacts.append(record)
 
         return upcoming_birthday_contacts
+
 
 if __name__ == "__main__":
     book = AddressBook()
@@ -248,20 +224,9 @@ if __name__ == "__main__":
                     break
 
                 address = input("Enter the contact's address: ")
-                if address == '0':
-                    break
-
                 phone = input("Enter the contact's phone number: ")
-                if phone == '0':
-                    break
-
                 email = input("Enter the contact's email address: ")
-                if email == '0':
-                    break
-
                 birthday = input("Enter the contact's birthday (YYYY-MM-DD): ")
-                if birthday == '0':
-                    break
 
                 if name and address and phone and email and birthday:
                     try:
@@ -273,6 +238,7 @@ if __name__ == "__main__":
                         record = Record(name_field, address_field, [phone_field], [email_field], birthday_field)
                         book.add_record(record)
                         print(f"Contact {name} added successfully!")
+                        break
                     except ValueError as e:
                         print(f"Error: {e}")
                         print("Please enter valid data.")
@@ -314,18 +280,16 @@ if __name__ == "__main__":
                             print("Please enter a valid address.")
 
                 elif edit_choice == "3":
-                    action = input("Enter '1' to edit an existing phone number or '2' to add a new one: ")
-                    if action == "1":
-                        old_phone = input("Enter the old phone number: ")
+                    old_phone = input("Enter the old phone number: ")
+                    while True:
                         new_phone = input("Enter the new phone number: ")
                         try:
                             record.edit_phone(old_phone, new_phone)
+                            print(f"Phone number updated for {record.name}")
+                            break
                         except ValueError as e:
                             print(f"Error: {e}")
                             print("Please enter a valid phone number.")
-                    elif action == "2":
-                        new_phone = input("Enter the new phone number: ")
-                        record.add_phone(new_phone)
 
                 elif edit_choice == "4":
                     while True:
@@ -398,4 +362,4 @@ if __name__ == "__main__":
             break
 
         else:
-            print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8/9)
+            print("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8/9).")
