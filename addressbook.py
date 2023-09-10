@@ -28,7 +28,6 @@ class Phone(Field):
         # If none of the above formats match, return False
         return False
 
-
     def __str__(self):
         return self.value
 
@@ -108,9 +107,6 @@ class Record:
         # Оновлюємо список телефонів об'єкта Record
         self.phones = [str(phone) for phone in self.phones]
 
-
-
-
     def days_to_birthday(self):
         if not self.birthday:
             return None
@@ -133,7 +129,6 @@ class Record:
             result += f"Birthday: {self.birthday}\n"
         result += "-" * 30
         return result
-
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
@@ -193,7 +188,6 @@ class AddressBook(UserDict):
 
         return found_records
 
-
     def get_upcoming_birthday_contacts(self, days):
         today = datetime.now().date()
         upcoming_birthday_contacts = []
@@ -213,7 +207,6 @@ class AddressBook(UserDict):
                     upcoming_birthday_contacts.append(record)
 
         return upcoming_birthday_contacts
-
 
 if __name__ == "__main__":
     book = AddressBook()
@@ -245,9 +238,20 @@ if __name__ == "__main__":
                     break
 
                 address = input("Enter the contact's address: ")
+                if address == '0':
+                    break
+
                 phone = input("Enter the contact's phone number: ")
+                if phone == '0':
+                    break
+
                 email = input("Enter the contact's email address: ")
+                if email == '0':
+                    break
+
                 birthday = input("Enter the contact's birthday (YYYY-MM-DD): ")
+                if birthday == '0':
+                    break
 
                 if name and address and phone and email and birthday:
                     try:
@@ -259,12 +263,12 @@ if __name__ == "__main__":
                         record = Record(name_field, address_field, [phone_field], [email_field], birthday_field)
                         book.add_record(record)
                         print(f"Contact {name} added successfully!")
-                        break
                     except ValueError as e:
                         print(f"Error: {e}")
                         print("Please enter valid data.")
                 else:
                     print("All fields are required. Please try again or enter '0' to cancel.")
+
 
         elif choice == "2":
             name = input("Enter the contact's name to edit: ")
