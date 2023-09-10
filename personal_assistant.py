@@ -375,8 +375,11 @@ def files_menu():
 
         if choice == "1":
             folder_path = input("Enter the folder to sort (preferably in the working folder): ")
-            folder_cleaner.main(folder_path)
-            input("Files have been successfully sorted by category. Press Enter to continue.")
+            if folder_path == "":
+                continue
+            else:
+                folder_cleaner.main(folder_path)
+                input("Files have been successfully sorted by category. Press Enter to continue.")
         elif choice == "2":
             return
         else:

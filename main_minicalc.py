@@ -1,5 +1,5 @@
 """ CALCULATOR !!! """
-from colorama import Fore
+from colorama import Fore, Style
 
 
 def main():
@@ -16,7 +16,7 @@ def main():
             # operand = input(f">>> Enter positive number or [q] for exit: ")
 
             print(Fore.BLUE + ">>> " + Fore.GREEN + "Enter positive " + Fore.WHITE + "number" + \
-                Fore.GREEN + " or [q] for exit: " + Fore.WHITE, end="")
+                Fore.GREEN + " or [q] for exit: " + Fore.YELLOW, end="")
             operand = input()
 
             if operand == "q":
@@ -27,7 +27,7 @@ def main():
                     print("_" * 27)
                     continue
                 else:
-                    print(f"Result of calculation: {result}")
+                    print(f"Result of calculation:\t{result}")
                     break
             else:
                 if result is None:
@@ -66,16 +66,16 @@ def main():
             # operator = input(f">>> Enter math operator or [q] for exit: ")
 
             print(Fore.BLUE + ">>> " + Fore.GREEN + "Enter " + Fore.WHITE + "math" + Fore.GREEN + \
-                " operator or [q] for exit: " + Fore.WHITE, end="")
+                " operator or [q] for exit: " + Fore.YELLOW, end="")
             operator = input()
 
             if operator == "q":
                 break
             elif operator == "=":
                 if result is not None:
-                    print(f"Result of calculation: {result}")
+                    print(f"Result of calculation:\t{result}")
                 else:
-                    print(f"Result of calculation: {operand}")
+                    print(f"Result of calculation:\t{operand}")
                 break
             elif operator not in ["+", "-", "/", "*"]:
                 print(f"{operator} not '+' or '-' or '/' or '*'. Try again.")
@@ -84,7 +84,7 @@ def main():
 
             wait_for_number = True
     
-    print("Good by!")
+    print("Good by!" + Style.RESET_ALL)
     
 
 if __name__ == "__main__":
