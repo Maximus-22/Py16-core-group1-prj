@@ -21,6 +21,17 @@
                 "m.perto@gmail.com"
             ],
             "birthday": "1982-08-02"
+        },
+        {
+            "name": "Dmytro",
+            "address": "Kiyv",
+            "phones": [
+                "0932510019"
+            ],
+            "emails": [
+                "dmytro.sv@ukr.net"
+            ],
+            "birthday": "1986-10-01"
         }
     ]
 }
