@@ -253,15 +253,17 @@ def notes_menu():
 
     while True:
         clear_screen()
-        print("Нотатки")
-        print("1. Додати нотатку")
-        print("2. Редагувати нотатку")
-        print("3. Видалити нотатку")
-        print("4. Пошук нотаток")
-        print("5. Сортувати нотатки за тегами")
-        print("6. Назад")
+        print("Notes")
+        print("1. Add a note")
+        print("2. Edit note")
+        print("3. Delete note")
+        print("4. Search notes")
+        print("5. Sort notes by tags")
+        print("6. Show all notes")
+        print("7. Delete all notes")
+        print("8. Exit")
 
-        choice = input("Оберіть опцію (1/2/3/4/5/6): ")
+        choice = input("Оберіть опцію (1/2/3/4/5/6/7/8): ")
 
         if choice == "1":
             add_note(note_manager)
@@ -272,94 +274,169 @@ def notes_menu():
         elif choice == "4":
             search_notes(note_manager)
         elif choice == "5":
-            sort_notes_by_tags(note_manager)
+            tags_input = input("Enter tags (separated by commas) to sort by: ")
+            tags = [tag.strip() for tag in tags_input.split(',')]
+            sort_notes_by_tags(note_manager, tags)
         elif choice == "6":
+            show_all_notes(note_manager)
+        elif choice == "7":
+            clear_all_notes(note_manager)
+        elif choice == "8":
             return
         else:
-            input("Некоректний вибір. Натисніть Enter для продовження.")
+            input("Incorrect choice.\nPress [Enter] to continue.")
 
 def add_note(note_manager):
     clear_screen()
-    print("Додати нотатку")
-    title = input("Заголовок: ")
-    body = input("Тіло нотатки: ")
-    tags = input("Теги (через кому): ").split(',')
+    print("Try to Add a note.")
+    title = input("Title: ")
+    body = input("Body of note: ")
+    if not body:
+        input("The field [Body of note] cannot be empty.\nPress [Enter] to continue.")
+        return
+    tags = input("Tags (separated comma): ").strip().split(',')
 
     note_manager.add_note(title, body, tags)
-    input("Нотатку успішно додано. Натисніть Enter для продовження.")
+    input("Note successfully added.\nPress [Enter] to continue.")
 
 def edit_note(note_manager):
     clear_screen()
-    print("Редагувати нотатку")
-    title = input("Введіть заголовок нотатки для редагування: ")
+    print("Try to Edit a note.")
+    title = input("Enter the title of the note to edit: ")
+
+    if not title:
+        input("You have not entered anything, please try again.\nPress [Enter] to continue.")
+        return
+    
     note = note_manager.search_notes(title)
 
     if note:
-        print("Поточні дані:")
-        print(f"Заголовок: {note['title']}")
-        print(f"Тіло нотатки: {note['body']}")
-        print(f"Теги: {', '.join(note['tags'])}")
+        note = note[0]
 
-        new_title = input("Новий заголовок (або Enter для збереження поточного): ")
-        new_body = input("Нове тіло нотатки (або Enter для збереження поточного): ")
-        new_tags = input("Нові теги (через кому) (або Enter для збереження поточних): ").split(',')
+        print("Current data:")
+        print(f"Title: {note['title']}")
+        print(f"Body of note: {note['body']}")
+        print(f"Tags: {', '.join(note['tags'])}")
+
+        new_title = input("New Title (or Enter to save the current one): ")
+        new_body = input("New Body of note (or Enter to save the current one): ")
+        new_tags = input("New Tags (separated comma) (or Enter to save current): ").strip().split(',')
 
         note_manager.edit_note(title, new_title, new_body, new_tags)
-        input("Нотатку успішно відредаговано. Натисніть Enter для продовження.")
+        input("Note edited successfully.\nPress [Enter] to continue.")
     else:
-        input("Нотатка з таким заголовком не знайдена. Натисніть Enter для продовження.")
+        input("Note with this [Title] was not found.\nPress [Enter] to continue.")
 
 def delete_note(note_manager):
     clear_screen()
-    print("Видалити нотатку")
-    title = input("Введіть заголовок нотатки для видалення: ")
-    note = note_manager.search_notes(title)
+    print("Try to Delete a note.")
+    title = input("Enter the [Title] of the note to delete: ")
+    if not title:
+        input("The field [Title] cannot be empty.\nPress [Enter] to continue.")
+        return
+    notes = note_manager.search_notes(title)
 
-    if note:
-        print("Дані нотатки:")
-        print(f"Заголовок: {note['title']}")
-        print(f"Тіло нотатки: {note['body']}")
-        print(f"Теги: {', '.join(note['tags'])}")
+    if notes:
+        note = notes[0]
+        print("Current data:")
+        print(f"Title: {note['title']}")
+        print(f"Body of note: {note['body']}")
+        print(f"Tags: {', '.join(note['tags'])}")
 
-        confirmation = input("Ви впевнені, що хочете видалити цю нотатку? (Так/Ні): ")
-
-        if confirmation.lower() == "так":
-            note_manager.delete_note(title)
-            input("Нотатку успішно видалено. Натисніть Enter для продовження.")
+        confirmation = input(f"Are you sure you want to delete the note \"{note['title']}\"? (Y/N): ")
+        if confirmation.lower() == "Y":
+            note_manager.delete_note(note['title'])
+            input("Note deleted successfully.\nPress [Enter] to continue.")
+        elif confirmation.lower() == "N":
+            input("Note deletion cancelled.\nPress [Enter] to continue.")
     else:
-        input("Нотатка з таким заголовком не знайдена. Натисніть Enter для продовження.")
+        input("Note with this [Title] was not found.\nPress [Enter] to continue.")
 
 def search_notes(note_manager):
     clear_screen()
-    print("Пошук нотаток")
-    query = input("Введіть пошуковий запит (заголовок або теги): ")
+    print("Try to Search notes.")
+    query = input("Enter a search query [Title] or [Tags]: ")
+
+    if not query:
+        input("You have not entered anything, please try again.\nPress [Enter] to continue.")
+        return
+    
     results = note_manager.search_notes(query)
 
     if results:
-        print("Результати пошуку:")
+        print("Search Results:")
         for i, note in enumerate(results, start=1):
-            print(f"{i}. Заголовок: {note['title']}")
-            print(f"   Тіло: {note['body']}")
-            print(f"   Теги: {', '.join(note['tags'])}")
+            print(f"{i}.\tTitle: {note['title']}")
+            print(f"\tBody of note: {note['body']}")
+            print(f"\tTags: {', '.join(note['tags'])}")
 
-        input("Натисніть Enter для продовження.")
+        input("Press [Enter] to continue.")
     else:
-        input("За вашим запитом не знайдено жодної нотатки. Натисніть Enter для продовження.")
+        input("No notes found by Your request.\nPress [Enter] to continue.")
 
-def sort_notes_by_tags(note_manager):
+def sort_notes_by_tags(note_manager, tags):
     clear_screen()
-    print("Сортування нотаток за тегами")
-    tag = input("Введіть тег для сортування нотаток: ")
-    sorted_notes = note_manager.sort_notes_by_tags(tag)
+    print("Try to Sort notes by tags.")
 
+    if not tags:
+        input("You have not entered any [Tags].\nPress [Enter] to continue.")
+        return
+    
+    sorted_notes = []
+    exact_match_notes = []
+
+    for tag in tags:
+        notes = note_manager.search_notes(tag)
+        if notes:
+            exact_match_notes.extend(notes)
+
+    all_notes = note_manager.show_all_notes()
+    for note in all_notes:
+        if note not in exact_match_notes:
+            sorted_notes.append(note)
+
+    if exact_match_notes:
+        print(f"Нотатки з точним збігом по тегам #{', '.join(tags)}:")
+        for i, note in enumerate(exact_match_notes, start=1):
+            print(f"{i}.\tTitle: {note['title']}")
+            print(f"\tBody of note:: {note['body']}")
+            print(f"\tTags: {', '.join(note['tags'])}")
+
+    sorted_notes.sort(key=lambda x: ', '.join(x['tags']))
     if sorted_notes:
-        print(f"Відсортовані нотатки за тегом '{tag}':")
+        print("Other notes are sorted alphabetically by [Tags]:")
         for i, note in enumerate(sorted_notes, start=1):
-            print(f"{i}. {note['title']} - {note['body']} ({', '.join(note['tags'])})")
+            print(f"{i}.\t{note['title']} - {note['body']} - #{', '.join(sorted(note['tags']))}")
 
-        input("Натисніть Enter для продовження.")
+    input("Press [Enter] to continue.")
+
+
+def show_all_notes(note_manager):
+    print("All notes:")
+    all_notes = note_manager.show_all_notes()
+
+    if all_notes:
+        for i, note in enumerate(all_notes, start=1):
+            print(f"{i}.\tTitle: {note['title']}")
+            print(f"\tBody of note: {note['body']}")
+            print(f"\tTags: {', '.join(note['tags'])}")
     else:
-        input(f"Нотатки з тегом '{tag}' не знайдені. Натисніть Enter для продовження.")
+        print("The notes list is empty.")
+
+    input("Press [Enter] to continue.")
+
+def clear_all_notes(note_manager):
+    clear_screen()
+    print("Try to Delete all notes.")
+    confirmation = input("Are You sure want to delete all notes? (Y/N):")
+
+    if confirmation.lower() == "Y":
+        note_manager.clear_all_notes()
+        input("All notes have been deleted.\nPress [Enter] to continue.")
+    elif confirmation.lower() == "N":
+        input("Canceled delete all notes.\nPress [Enter] to continue.")
+    else:
+        input("Incorrect input, action cancelled.\nPress [Enter] to continue.")
 
 
 # SECTION OF CLEAN FOLDER
