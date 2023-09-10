@@ -17,7 +17,17 @@ class Phone(Field):
 
     @staticmethod
     def validate_phone(value):
-        return bool(re.match(r'^\d{10}$', value))
+        # Check the format +38-000-0000000 or +380000000000
+        if re.match(r'^\+\d{2}-\d{3}-\d{7}$', value) or re.match(r'^\+\d{12}$', value):
+            return True
+
+        # Check the format 000-0000000 or 0000000000
+        if re.match(r'^\d{3}-\d{7}$', value) or re.match(r'^\d{10}$', value):
+            return True
+
+        # If none of the above formats match, return False
+        return False
+
 
     def __str__(self):
         return self.value
@@ -87,10 +97,19 @@ class Record:
         self.phones = new_phones
 
     def edit_phone(self, old_phone, new_phone):
-        for phone in self.phones:
-            if phone.value == old_phone:
-                phone.value = new_phone
+        for i, phone in enumerate(self.phones):
+            if isinstance(phone, Phone) and phone.value == old_phone:
+                self.phones[i] = Phone(new_phone)
+                # Оновлення телефонів у списку об'єкта Record
+                self.update_record_phones()
                 break
+
+    def update_record_phones(self):
+        # Оновлюємо список телефонів об'єкта Record
+        self.phones = [str(phone) for phone in self.phones]
+
+
+
 
     def days_to_birthday(self):
         if not self.birthday:
@@ -108,10 +127,8 @@ class Record:
     def __str__(self):
         result = f"Name: {self.name}\n"
         result += f"Address: {self.address}\n"
-
         result += f"Phones: {', '.join(self.phones)}\n"
         result += f"Emails: {', '.join(self.emails)}\n"
-
         if self.birthday:
             result += f"Birthday: {self.birthday}\n"
         result += "-" * 30
