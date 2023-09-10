@@ -253,17 +253,24 @@ def notes_menu():
 
     while True:
         clear_screen()
-        print("Notes")
-        print("1. Add a note")
-        print("2. Edit note")
-        print("3. Delete note")
-        print("4. Search notes")
-        print("5. Sort notes by tags")
-        print("6. Show all notes")
-        print("7. Delete all notes")
-        print("8. Exit")
+        menu = PrettyTable()
+        menu.field_names = [Fore.BLUE + "Option", Fore.BLUE + "Description"]
 
-        choice = input("Оберіть опцію (1/2/3/4/5/6/7/8): ")
+        menu.add_row(["1", "Add a note"])
+        menu.add_row(["2", "Edit note"])
+        menu.add_row(["3", "Delete note"])
+        menu.add_row(["4", "Search notes"])
+        menu.add_row(["5", "Sort notes by tags"])
+        menu.add_row(["6", "Show all notes"])
+        menu.add_row(["7", "Delete all notes"])
+        menu.add_row(["8", "Exit"])
+
+        print(Fore.BLUE + "Notes Menu:")
+        print(menu)
+
+        choice = input(Fore.GREEN + "Enter your choice (1/2/3/4/5/6/7/8): " + Style.RESET_ALL)
+
+        # choice = input("Оберіть опцію (1/2/3/4/5/6/7/8): ")
 
         if choice == "1":
             add_note(note_manager)
@@ -396,7 +403,7 @@ def sort_notes_by_tags(note_manager, tags):
             sorted_notes.append(note)
 
     if exact_match_notes:
-        print(f"Нотатки з точним збігом по тегам #{', '.join(tags)}:")
+        print(f"Notes with the best match of tag #{', '.join(tags)}:")
         for i, note in enumerate(exact_match_notes, start=1):
             print(f"{i}.\tTitle: {note['title']}")
             print(f"\tBody of note:: {note['body']}")
