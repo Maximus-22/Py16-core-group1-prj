@@ -77,6 +77,7 @@ def contacts_menu():
         choice = input(Fore.YELLOW + "Enter your choice (1/2/3/4/5/6/7/8/9): " + Style.RESET_ALL)
 
         if choice == "1":
+            clear_screen()
             while True:
                 print("Enter contact details (or enter '0' to exit):")
                 name = input("Enter the contact's name: ")
@@ -84,9 +85,20 @@ def contacts_menu():
                     break
 
                 address = input("Enter the contact's address: ")
+                if address == '0':
+                    break
+
                 phone = input("Enter the contact's phone number: ")
+                if phone == '0':
+                    break
+
                 email = input("Enter the contact's email address: ")
+                if email == '0':
+                    break
+
                 birthday = input("Enter the contact's birthday (YYYY-MM-DD): ")
+                if birthday == '0':
+                    break
 
                 if name and address and phone and email and birthday:
                     try:
@@ -109,6 +121,7 @@ def contacts_menu():
                     input("All fields are required. Please try again or enter '0' to cancel.\nPress [Enter] to continue.")
 
         elif choice == "2":
+            clear_screen()
             name = input("Enter the contact's name to edit: ")
             if name in book.data:
                 record = book.data[name]
@@ -146,19 +159,35 @@ def contacts_menu():
                             # print("Please enter a valid address.")
                             input("Please enter a valid address.\nPress [Enter] to continue.")
 
+                # elif edit_choice == "3":
+                #     old_phone = input("Enter the old phone number: ")
+                #     while True:
+                #         new_phone = input("Enter the new phone number: ")
+                #         try:
+                #             record.edit_phone(old_phone, new_phone)
+                #             # print(f"Phone number updated for {record.name}")
+                #             input(f"Phone number updated for {record.name}.\nPress [Enter] to continue.")
+                #             break
+                #         except ValueError as e:
+                #             print(f"Error: {e}")
+                #             # print("Please enter a valid phone number.")
+                #             input("Please enter a valid phone number.\nPress [Enter] to continue.")
+
                 elif edit_choice == "3":
-                    old_phone = input("Enter the old phone number: ")
-                    while True:
+                    action = input("Enter [1] to edit an existing phone number or [2] to add a new one: ")
+                    if action == "1":
+                        old_phone = input("Enter the old phone number: ")
                         new_phone = input("Enter the new phone number: ")
                         try:
                             record.edit_phone(old_phone, new_phone)
-                            # print(f"Phone number updated for {record.name}")
                             input(f"Phone number updated for {record.name}.\nPress [Enter] to continue.")
-                            break
                         except ValueError as e:
                             print(f"Error: {e}")
-                            # print("Please enter a valid phone number.")
                             input("Please enter a valid phone number.\nPress [Enter] to continue.")
+                    elif action == "2":
+                        new_phone = input("Enter the new phone number: ")
+                        record.add_phone(new_phone)
+                        input(f"Phone number added for {record.name}.\nPress [Enter] to continue.")
 
                 elif edit_choice == "4":
                     while True:
@@ -187,6 +216,7 @@ def contacts_menu():
                             input("Please enter a valid birthday (YYYY-MM-DD).\nPress [Enter] to continue.")
 
         elif choice == "3":
+            clear_screen()
             name = input("Enter the contact's name to delete: ")
             if name in book.data:
                 del book.data[name]
@@ -194,6 +224,7 @@ def contacts_menu():
                 input(f"Contact {name} deleted successfully!\nPress [Enter] to continue.")
 
         elif choice == "4":
+            clear_screen()
             print("List of All Contacts:")
             for record in book.data.values():
                 print(record)
@@ -201,18 +232,21 @@ def contacts_menu():
             input("Press [Enter] to continue.")
 
         elif choice == "5":
+            clear_screen()
             filename = input("Enter the filename to save the address book (addressbook.json): ")
             book.save_to_file(filename)
             # print(f"Address book saved to {filename} successfully!")
             input(f"Address book saved to {filename} successfully!")
 
         elif choice == "6":
+            clear_screen()
             filename = input("Enter the filename to load the address book from (addressbook.json): ")
             book = AddressBook.load_from_file(filename)
             # print(f"Address book loaded from {filename} successfully!\nPress [Enter] to continue.")
             input(f"Address book loaded from {filename} successfully!\nPress [Enter] to continue.")
 
         elif choice == "7":
+            clear_screen()
             query = input("Enter a search query: ")
             found_records = book.search_records(query)
             if found_records:
@@ -226,6 +260,7 @@ def contacts_menu():
                 input("No matching records found.\nPress [Enter] to continue.")
 
         elif choice == "8":
+            clear_screen()
             days = int(input("Enter the number of days for upcoming birthdays: "))
             upcoming_birthday_contacts = book.get_upcoming_birthday_contacts(days)
             if upcoming_birthday_contacts:
@@ -409,7 +444,6 @@ def sort_notes_by_tags(note_manager, tags):
             print(f"{i}.\t{note['title']} - {note['body']} - #{', '.join(sorted(note['tags']))}")
 
     input("Press [Enter] to continue.")
-
 
 def show_all_notes(note_manager):
     print("All notes:")
