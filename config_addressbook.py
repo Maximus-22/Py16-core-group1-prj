@@ -1,8 +1,7 @@
 import json, os, re
 from datetime import datetime
-from prettytable import PrettyTable
 from collections import UserDict
-from colorama import Fore, Style
+
 
 class Field:
     def __init__(self, value):

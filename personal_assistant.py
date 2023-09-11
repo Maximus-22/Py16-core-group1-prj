@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from prettytable import PrettyTable
 from config_addressbook import Address, AddressBook, Birthday, Email, Name, Phone, Record
 from config_notes import NoteManager
+# from main_banderogoose import main as goose
 import main_cleaner as folder_cleaner
 import main_minicalc
 
@@ -24,7 +25,7 @@ def main_menu():
         print("2. Notes")
         print("3. Sorting files")
         print("4. Mini Calculator")
-        print("5. Game BanderoGoose")
+        print("5. Game BanderoGoose (in new window)")
         print("6. Quit\n")
         print("+" + "-" * 50 + "+\n")
 
@@ -41,6 +42,7 @@ def main_menu():
             main_minicalc.main()
             input("Press Enter to continue.")
         elif choice == "5":
+            # goose()
             try:
                 script_name = "main_banderogoose.py"
                 subprocess.run(["python", script_name], check = True)
