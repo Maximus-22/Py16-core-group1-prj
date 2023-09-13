@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from prettytable import PrettyTable
 from config_addressbook import Address, AddressBook, Birthday, Email, Name, Phone, Record
 from config_notes import NoteManager
-# from main_banderogoose import main as goose
 import main_cleaner as folder_cleaner
 import main_minicalc
 
@@ -19,17 +18,23 @@ def clear_screen():
 def main_menu():
     while True:
         clear_screen()
-        print("+" + "-" * 50 + "+")
-        print("Welcome to your Personal Assistant!\n")
-        print("1. Contacts")
-        print("2. Notes")
-        print("3. Sorting files")
-        print("4. Mini Calculator")
-        print("5. Game BanderoGoose (in new window)")
-        print("6. Quit\n")
-        print("+" + "-" * 50 + "+\n")
+        menu = PrettyTable()
+        menu.field_names = [Fore.RED + "Option", Fore.RED + "Description"]
 
-        choice = input("Select an option [1 / 2 / 3 / 4 / 5 / 6]: ")
+        
+        menu.add_row(["1", "Contacts"])
+        menu.add_row(["2", "Notes"])
+        menu.add_row(["3", "Sorting files"])
+        menu.add_row(["4", "Mini Calculator"])
+        menu.add_row(["5", "Game BanderoGoose"])
+        menu.add_row(["6", "Quit"])
+        
+        
+        print(Fore.RED + "Welcome to your Personal Assistant!")
+        print(menu)
+        print(Style.RESET_ALL)
+
+        choice = input(Fore.YELLOW +"Select an option [1 / 2 / 3 / 4 / 5 / 6]: " + Style.RESET_ALL)
 
         if choice == "1":
             contacts_menu()
@@ -42,12 +47,12 @@ def main_menu():
             main_minicalc.main()
             input("Press Enter to continue.")
         elif choice == "5":
-            # goose()
             try:
-                script_name = "main_banderogoose.py"
-                subprocess.run(["python", script_name], check = True)
+                dir_goose = os.path.dirname(os.path.abspath(__file__))
+                goose = os.path.join(dir_goose, "main_banderogoose.py")
+                subprocess.run(["python", goose], check = True)
             except subprocess.CalledProcessError:
-                print(f"An error occurred while executing the script {script_name}.")
+                input(f"An error occurred while executing the script {goose}.")                
         elif choice == "6":
             sys.exit()
         else:
@@ -228,9 +233,10 @@ def contacts_menu():
         elif choice == "4":
             clear_screen()
             print("List of All Contacts:")
-            for record in book.data.values():
-                print(record)
-                print("-" * 30)
+            if book.data:
+                for record in book.data.values():
+                    print(record)
+                    print("-" * 30)
             input("Press [Enter] to continue.")
 
         elif choice == "5":
@@ -291,7 +297,7 @@ def notes_menu():
     while True:
         clear_screen()
         menu = PrettyTable()
-        menu.field_names = [Fore.BLUE + "Option", Fore.BLUE + "Description"]
+        menu.field_names = [Fore.GREEN + "Option", Fore.GREEN + "Description"]
 
         menu.add_row(["1", "Add a note"])
         menu.add_row(["2", "Edit note"])
@@ -302,10 +308,10 @@ def notes_menu():
         menu.add_row(["7", "Delete all notes"])
         menu.add_row(["8", "Exit"])
 
-        print(Fore.BLUE + "Notes Menu:")
+        print(Fore.GREEN + "Notes Menu:")
         print(menu)
 
-        choice = input(Fore.GREEN + "Enter your choice (1/2/3/4/5/6/7/8): " + Style.RESET_ALL)
+        choice = input(Fore.YELLOW + "Enter your choice (1/2/3/4/5/6/7/8): " + Style.RESET_ALL)
 
         # choice = input("Оберіть опцію (1/2/3/4/5/6/7/8): ")
 
@@ -487,11 +493,23 @@ def files_menu():
 
     while True:
         clear_screen()
-        print("The script will help to sort the files in the specified folder by their extension by categories.")
-        print("1. Sort files by category")
-        print("2. Quit")
+        menu = PrettyTable()
+        print(Fore.YELLOW +"The script will help to sort the files in the specified folder by their extension by categories." + Style.RESET_ALL)
+        menu.field_names = [Fore.BLUE + "Option", Fore.BLUE + "Description"]
 
-        choice = input("Select an option [1 / 2]: ")
+        menu.add_row(["1", "Sort files by category"])
+        menu.add_row(["2", "Quit"])
+        
+        print(Fore.BLUE + "Clean Folder Menu:")
+        print(menu)
+
+        choice = input(Fore.YELLOW + "Select an option [1 / 2]: " + Style.RESET_ALL)
+
+        # print("The script will help to sort the files in the specified folder by their extension by categories.")
+        # print("1. Sort files by category")
+        # print("2. Quit")
+
+        # choice = input("Select an option [1 / 2]: ")
 
         if choice == "1":
             folder_path = input("Enter the folder to sort (preferably in the working folder): ")

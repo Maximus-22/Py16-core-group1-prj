@@ -178,6 +178,8 @@ class AddressBook(UserDict):
                     return book
             except FileNotFoundError:
                 return cls()
+        else:
+            return cls()
 
     def search_records(self, query):
         query = query.lower()
@@ -198,6 +200,7 @@ class AddressBook(UserDict):
                 if query in email.lower():
                     found_records.append(record)
                     break
+            found_records = list(set(found_records))
 
         return found_records
 
