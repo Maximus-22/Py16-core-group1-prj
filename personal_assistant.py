@@ -324,6 +324,7 @@ def notes_menu():
         elif choice == "4":
             search_notes(note_manager)
         elif choice == "5":
+            clear_screen()
             tags_input = input("Enter tags (separated by commas) to sort by: ")
             tags = [tag.strip() for tag in tags_input.split(',')]
             sort_notes_by_tags(note_manager, tags)
@@ -394,10 +395,10 @@ def delete_note(note_manager):
         print(f"Tags: {', '.join(note['tags'])}")
 
         confirmation = input(f"Are you sure you want to delete the note \"{note['title']}\"? (Y/N): ")
-        if confirmation.lower() == "Y":
+        if confirmation.lower() == "y":
             note_manager.delete_note(note['title'])
             input("Note deleted successfully.\nPress [Enter] to continue.")
-        elif confirmation.lower() == "N":
+        elif confirmation.lower() == "n":
             input("Note deletion cancelled.\nPress [Enter] to continue.")
     else:
         input("Note with this [Title] was not found.\nPress [Enter] to continue.")
@@ -425,7 +426,7 @@ def search_notes(note_manager):
         input("No notes found by Your request.\nPress [Enter] to continue.")
 
 def sort_notes_by_tags(note_manager, tags):
-    clear_screen()
+    # clear_screen()
     print("Try to Sort notes by tags.")
 
     if not tags:
@@ -461,6 +462,7 @@ def sort_notes_by_tags(note_manager, tags):
     input("Press [Enter] to continue.")
 
 def show_all_notes(note_manager):
+    clear_screen()
     print("All notes:")
     all_notes = note_manager.show_all_notes()
 
@@ -479,10 +481,10 @@ def clear_all_notes(note_manager):
     print("Try to Delete all notes.")
     confirmation = input("Are You sure want to delete all notes? (Y/N):")
 
-    if confirmation.lower() == "Y":
+    if confirmation.lower() == "y":
         note_manager.clear_all_notes()
         input("All notes have been deleted.\nPress [Enter] to continue.")
-    elif confirmation.lower() == "N":
+    elif confirmation.lower() == "n":
         input("Canceled delete all notes.\nPress [Enter] to continue.")
     else:
         input("Incorrect input, action cancelled.\nPress [Enter] to continue.")
